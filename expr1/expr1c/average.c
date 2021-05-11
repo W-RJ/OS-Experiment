@@ -19,7 +19,7 @@ double str2d(const char *str)
     {
         if (!isdigit(*str))
         {
-            fputs("\e[31m错误：非法参数\e[0m\n", stderr);
+            fputs("\e[1;31m错误：非法参数\e[0m\n", stderr);
             exit(2);
         }
         res = res * 10 + *str - '0';
@@ -37,12 +37,12 @@ int main(int argc, char **argv)
     double m, n, l;
     if (argc < 4)
     {
-        fputs("\e[31m错误：参数过少\e[0m\n", stderr);
+        fputs("\e[1;31m错误：参数过少\e[0m\n", stderr);
         return 1;
     }
     else if (argc > 4)
     {
-        fputs("\e[31m错误：参数过多\e[0m\n", stderr);
+        fputs("\e[1;31m错误：参数过多\e[0m\n", stderr);
         return 1;
     }
     m = str2d(argv[1]);

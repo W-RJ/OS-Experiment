@@ -9,7 +9,8 @@
 #define CMD_MAX 128
 #define ARG_MAX 64
 
-const char PROMPT[] = "wangrj-shell> ";
+#define PROMPT_BASE "WangRJ-Shell> "
+const char PROMPT[] = "\e[1;36m" PROMPT_BASE "\e[0m";
 
 void printerr(int ptr, int newline)
 {
@@ -25,7 +26,7 @@ void printerr(int ptr, int newline)
     {
         fprintf(stderr, " ");
     }
-    fprintf(stderr, "\e[31m^\n");
+    fprintf(stderr, "\e[1;31m^\n");
     for (int i = 5; i < ptr; i++)
     {
         fprintf(stderr, " ");
@@ -48,7 +49,7 @@ int main()
 {
     char cmd[CMD_MAX];
     char c;
-    int ptr = (sizeof(PROMPT)) / sizeof(char) - 2;
+    int ptr = (sizeof(PROMPT_BASE)) / sizeof(char) - 2;
     char *argv[ARG_MAX];
     int argc = 1;
     int pid;
@@ -156,7 +157,7 @@ int main()
             argv[argc] = NULL;
         }
         printf(PROMPT);
-        ptr = (sizeof(PROMPT)) / sizeof(char) - 2;
+        ptr = (sizeof(PROMPT_BASE)) / sizeof(char) - 2;
     }
     return 0;
 }
