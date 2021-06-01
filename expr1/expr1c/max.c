@@ -34,20 +34,20 @@ long long str2ll(const char *str)
 
 int main(int argc, char **argv)
 {
-    long long m, n;
-    if (argc < 3)
+    long long res, x;
+    int i;
+    if (argc < 2)
     {
         fputs("\e[1;31m错误：参数过少\e[0m\n", stderr);
         return 1;
     }
-    else if (argc > 3)
+    res = str2ll(argv[1]);
+    for (i = 2; i < argc; i++)
     {
-        fputs("\e[1;31m错误：参数过多\e[0m\n", stderr);
-        return 1;
+        x = str2ll(argv[i]);
+        res = res > x ? res : x;
     }
-    m = str2ll(argv[1]);
-    n = str2ll(argv[2]);
-    printf("答案 = %lld\n", m > n ? m : n);
+    printf("答案 = %lld\n", res);
     
     return 0;
 }

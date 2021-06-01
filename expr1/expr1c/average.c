@@ -34,21 +34,18 @@ double str2d(const char *str)
 
 int main(int argc, char **argv)
 {
-    double m, n, l;
-    if (argc < 4)
+    double res = 0.0;
+    int i;
+    if (argc < 2)
     {
         fputs("\e[1;31m错误：参数过少\e[0m\n", stderr);
         return 1;
     }
-    else if (argc > 4)
+    for (i = 1; i < argc; i++)
     {
-        fputs("\e[1;31m错误：参数过多\e[0m\n", stderr);
-        return 1;
+        res += str2d(argv[i]);
     }
-    m = str2d(argv[1]);
-    n = str2d(argv[2]);
-    l = str2d(argv[3]);
-    printf("答案 = %lf\n", (m + n + l) / 3);
+    printf("答案 = %lf\n", res / (argc - 1));
     
     return 0;
 }
