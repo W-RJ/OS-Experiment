@@ -50,7 +50,7 @@ int main()
     char cmd[CMD_MAX];
     char c;
     int ptr = (sizeof(PROMPT_BASE)) / sizeof(char) - 2;
-    char *argv[ARG_MAX];
+    char *argv[ARG_MAX] = {NULL};
     int argc = 1;
     int pid;
     int success;
