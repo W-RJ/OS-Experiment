@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  # push:
+  #   branches: 
+  #     - master
+  #     - develop
+  pull_request:
+    branches:
+      - master
+      - develop
+
+jobs:
+
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    # TODO
