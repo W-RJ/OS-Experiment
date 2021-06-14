@@ -17,7 +17,124 @@
 </head>
 
 <body>
-    <!--TODO-->
+
+    <div class="container" id="main-container">
+        <!--Buttons-->
+        <div class="container">
+            <div class="row" style="text-align: center;">
+                <div class="col-sm">
+                    <button type="button" class="btn btn-primary" id="btn-add" data-bs-toggle="modal"
+                        data-bs-target="#modal-add">添加进程</button>
+                </div>
+                <div class="col-sm">
+                    <button type="button" class="btn btn-primary" id="btn-random" onclick="onRandom()">随机生成</button>
+                </div>
+                <div class="col-sm">
+                    <button type="button" class="btn btn-primary" id="btn-reset" onclick="onReset()">重置进程</button>
+                </div>
+                <div class="col-sm">
+                    <button type="button" class="btn btn-primary" id="btn-backward" onclick="onBackward()">单步后退</button>
+                </div>
+                <div class="col-sm">
+                    <button type="button" class="btn btn-primary" id="btn-forward" onclick="onForward()">单步执行</button>
+                </div>
+                <div class="col-sm">
+                    <button type="button" class="btn btn-primary" id="btn-continue" onclick="onContinue()">连续执行</button>
+                </div>
+                <div class="col-sm">
+                    <button type="button" class="btn btn-primary" id="btn-complete" onclick="onComplete()">直接完成</button>
+                </div>
+            </div>
+        </div>
+
+        <!--Info Table-->
+        <table class="table table-striped" id="infotable">
+            <thead>
+                <tr>
+                    <th scope="col">进程</th>
+                    <th scope="col">到达时间</th>
+                    <th scope="col">需要服务时间</th>
+                    <th scope="col">已服务时间</th>
+                    <th scope="col">完成时间</th>
+                    <th scope="col">周转时间</th>
+                    <th scope="col">带权周转时间</th>
+                    <th scope="col">状态</th>
+                    <th scope="col">操作</th>
+                </tr>
+            </thead>
+            <tbody id="infotable-body">
+            </tbody>
+        </table>
+
+        <!--Timeline-->
+        <div id="timeline-container">
+            <div style="width: 0%;" id="timeline-limiter">
+                <table id="timeline">
+                    <tbody>
+                        <tr id="timeline-tr">
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!--Time Chart-->
+        <div id="timechart-container">
+            <div style="width: 0%;" id="timechart-limiter">
+                <table id="timechart">
+                    <tbody id="timechart-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <table id="timechart-axis">
+            <tr>
+            </tr>
+        </table>
+
+        <!--Status Chart-->
+        <div id="statuschart-container">
+            <div id="statuschart-queue">
+                <p>QUEUE</p>
+            </div>
+            <div id="statuschart-cpu">
+                <p>CPU</p>
+            </div>
+        </div>
+    </div>
+
+    <!--Modal Add-->
+    <div class="modal fade" id="modal-add" tabindex="-1" aria-labelledby="modal-add-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-add-label">添加进程</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="inputGroup-sizing-default">进程名</span>
+                        <input type="text" class="form-control" aria-label="Sizing example input"
+                            aria-describedby="inputGroup-sizing-default" id="modal-add-name">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="inputGroup-sizing-default">到达时间</span>
+                        <input type="number" class="form-control" aria-label="Sizing example input"
+                            aria-describedby="inputGroup-sizing-default" id="modal-add-arrivaltime">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="inputGroup-sizing-default">服务时间</span>
+                        <input type="number" class="form-control" aria-label="Sizing example input"
+                            aria-describedby="inputGroup-sizing-default" id="modal-add-requiredtime">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="modal-add-ok" onclick="onAddProcess()">添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- JavaScript 文件是可选的。从以下两种建议中选择一个即可！ -->
 

@@ -1,0 +1,137 @@
+body {
+    font-size: large;
+}
+
+#main-container {
+    width: 720px;
+    overflow: hidden;
+    background: #7f7f7f1f;
+}
+
+/* infotable */
+
+#infotable {
+    text-align: center;
+}
+
+#infotable tr {
+    background-size: 200%;
+    background-position: 100%;
+    transition: background-position linear;
+    transition-duration: 0.5s;
+    /* border: 5px solid #00000000; */
+}
+
+/* timeline */
+
+#timeline-container {
+    overflow: hidden;
+    border: 2px solid #000000;
+    background-image: radial-gradient(#afafaf5f, #6f6f6f5f);
+    margin-bottom: 12px;
+}
+
+#timeline-limiter {
+    overflow: hidden;
+    transition: 0.5s;
+    transition-timing-function: linear;
+}
+
+#timeline {
+    width: 700px;
+    height: 48px;
+    table-layout: fixed;
+    text-align: center;
+}
+
+/* timechart */
+
+#timechart-container {
+    border-left: 2px solid black;
+}
+
+#timechart-limiter {
+    overflow: hidden;
+    transition: 0.5s;
+    transition-timing-function: linear;
+}
+
+#timechart {
+    width: 700px;
+    table-layout: fixed;
+    text-align: center;
+}
+
+#timechart tr {
+    height: 32px;
+}
+
+#timechart-axis {
+    width: 702px;
+    table-layout: fixed;
+    text-align: center;
+    vertical-align: top;
+    border-top: 2px solid black;
+    margin-bottom: 12px;
+}
+
+/* statuschart */
+
+#statuschart-container {
+    position: relative;
+    width: 702px;
+    height: 640px;
+    overflow: hidden;
+}
+
+.statuschart-item {
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    line-height: 64px;
+    border-radius: 16px;
+    text-align: center;
+    opacity: 0.92;
+    transition: 0.3s;
+    transition-timing-function: linear;
+}
+
+.statuschart-item p {
+    display: inline-block;
+    font-size: x-large;
+}
+
+#statuschart-queue {
+    position: absolute;
+    left: 2px;
+    top: 60px;
+    width: 600px;
+    height: 72px;
+    line-height: 64px;
+    border: 4px solid black;
+    border-right: none;
+}
+
+#statuschart-queue p {
+    display: inline-block;
+    width: 84px;
+    text-align: center;
+    font-size: x-large;
+}
+
+#statuschart-cpu {
+    position: absolute;
+    left: 156px;
+    top: 188px;
+    width: 71px;
+    height: 72px;
+    line-height: 64px;
+    border-radius: 20px;
+    border: 4px solid black;
+    text-align: center;
+}
+
+#statuschart-cpu p {
+    display: inline-block;
+    font-size: x-large;
+}
