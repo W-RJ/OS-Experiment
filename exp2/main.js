@@ -11,20 +11,20 @@ const ALGORITHM_SJF = 2;
 const ALGORITHM_HRN = 3;
 
 const POS_NOT_ARRIVED_L = 624;
-const POS_NOT_ARRIVED_T = 58;
+const POS_NOT_ARRIVED_T = 26;
 const POS_NOT_ARRIVED_DL = 2;
 const POS_NOT_ARRIVED_DT = 2;
 
 const POS_READY_L = 6;
-const POS_READY_T = 64;
+const POS_READY_T = 32;
 const POS_READY_DL = 64;
 const POS_READY_DT = 0;
 
-const POS_RUNNING_L = 160;
-const POS_RUNNING_T = 192;
+const POS_RUNNING_L = 128;
+const POS_RUNNING_T = 160;
 
-const POS_COMPLETED_L = 152;
-const POS_COMPLETED_T = 320;
+const POS_COMPLETED_L = 320;
+const POS_COMPLETED_T = 156;
 const POS_COMPLETED_DL = 2;
 const POS_COMPLETED_DT = 2;
 

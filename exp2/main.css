@@ -3,7 +3,7 @@ body {
 }
 
 #main-container {
-    width: 720px;
+    min-width: 1440px;
     overflow: hidden;
     background: #7f7f7f1f;
 }
@@ -38,7 +38,7 @@ body {
 }
 
 #timeline {
-    width: 700px;
+    width: 1420px;
     height: 48px;
     table-layout: fixed;
     text-align: center;
@@ -57,7 +57,7 @@ body {
 }
 
 #timechart {
-    width: 700px;
+    width: 1420px;
     table-layout: fixed;
     text-align: center;
 }
@@ -67,7 +67,7 @@ body {
 }
 
 #timechart-axis {
-    width: 702px;
+    width: 1422px;
     table-layout: fixed;
     text-align: center;
     vertical-align: top;
@@ -80,7 +80,7 @@ body {
 #statuschart-container {
     position: relative;
     width: 702px;
-    height: 640px;
+    height: 256px;
     overflow: hidden;
 }
 
@@ -93,7 +93,7 @@ body {
     text-align: center;
     opacity: 0.92;
     transition: 0.3s;
-    transition-timing-function: linear;
+    transition-timing-function: ease-out;
 }
 
 .statuschart-item p {
@@ -104,7 +104,7 @@ body {
 #statuschart-queue {
     position: absolute;
     left: 2px;
-    top: 60px;
+    top: 28px;
     width: 600px;
     height: 72px;
     line-height: 64px;
@@ -121,8 +121,8 @@ body {
 
 #statuschart-cpu {
     position: absolute;
-    left: 156px;
-    top: 188px;
+    left: 124px;
+    top: 156px;
     width: 71px;
     height: 72px;
     line-height: 64px;

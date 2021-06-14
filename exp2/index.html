@@ -47,24 +47,40 @@
             </div>
         </div>
 
-        <!--Info Table-->
-        <table class="table table-striped" id="infotable">
-            <thead>
-                <tr>
-                    <th scope="col">进程</th>
-                    <th scope="col">到达时间</th>
-                    <th scope="col">需要服务时间</th>
-                    <th scope="col">已服务时间</th>
-                    <th scope="col">完成时间</th>
-                    <th scope="col">周转时间</th>
-                    <th scope="col">带权周转时间</th>
-                    <th scope="col">状态</th>
-                    <th scope="col">操作</th>
-                </tr>
-            </thead>
-            <tbody id="infotable-body">
-            </tbody>
-        </table>
+        <div class="row align-items-start">
+            <div class="col">
+                <!--Info Table-->
+                <table class="table table-striped" id="infotable">
+                    <thead>
+                        <tr>
+                            <th scope="col">进程</th>
+                            <th scope="col">到达时间</th>
+                            <th scope="col">需要服务时间</th>
+                            <th scope="col">已服务时间</th>
+                            <th scope="col">完成时间</th>
+                            <th scope="col">周转时间</th>
+                            <th scope="col">带权周转时间</th>
+                            <th scope="col">状态</th>
+                            <th scope="col">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="infotable-body">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col">
+                <!--Status Chart-->
+                <div id="statuschart-container">
+                    <div id="statuschart-queue">
+                        <p>QUEUE</p>
+                    </div>
+                    <div id="statuschart-cpu">
+                        <p>CPU</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!--Timeline-->
         <div id="timeline-container">
@@ -91,16 +107,6 @@
             <tr>
             </tr>
         </table>
-
-        <!--Status Chart-->
-        <div id="statuschart-container">
-            <div id="statuschart-queue">
-                <p>QUEUE</p>
-            </div>
-            <div id="statuschart-cpu">
-                <p>CPU</p>
-            </div>
-        </div>
     </div>
 
     <!--Modal Add-->
