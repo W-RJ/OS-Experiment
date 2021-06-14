@@ -343,7 +343,7 @@ function forward() {
     $('#timeline-limiter').css('width', 100 * curTime / finalTime + '%');
     $('#timechart-limiter').css('width', 100 * curTime / finalTime + '%');
 
-    setTimeout(onTimer, delay);
+    setTimeout('onTimer()', delay);
 }
 
 function doPause() {
@@ -480,8 +480,9 @@ function onRandom() {
         randomID = 2;
     }
     let n = Math.round(Math.random() * 2 + 6) + randomID;
+    let div = n - randomID + processes.length;
     for (; randomID < n; randomID++) {
-        addProcess('P' + randomID, Math.floor(Math.random() * 12), Math.floor(Math.random() * 60 / n + 1));
+        addProcess('P' + randomID, Math.floor(Math.random() * 12), Math.floor(Math.random() * 60 / div + 1));
     }
 }
 
