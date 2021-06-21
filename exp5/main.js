@@ -205,6 +205,10 @@ function getRandomColor() {
     if (h > 195 && h < 285)
     {
         return {fg: 'hsl(' + h + ',100%,65%)', base: h};
+    } else if (h > 320 || h < 10) {
+        return {fg: 'hsl(' + h + ',100%,60%)', base: h};
+    } else if (h >= 50 && h <= 70 || h >= 170 && h <= 190) {
+        return {fg: 'hsl(' + h + ',100%,45%)', base: h};
     } else {
         return {fg: 'hsl(' + h + ',100%,50%)', base: h};
     }
