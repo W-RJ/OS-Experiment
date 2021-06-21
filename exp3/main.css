@@ -1,9 +1,15 @@
+html {
+    height: 100%;
+}
+
 body {
+    height: 100%;
     font-size: large;
 }
 
 #main-container {
     min-width: 1320px;
+    height: 100%;
     overflow: hidden;
     background: #efefefdf;
 }

@@ -56,6 +56,8 @@ class File {
         }
 
         this.showItem(i);
+
+        checkHeight();
     }
 
     show() {
@@ -137,6 +139,8 @@ class File {
     remove() {
         $('#memline-' + this.id).remove();
         $('#item-' + this.id).remove();
+
+        checkHeight();
     }
 
     resetTag(i, chColor) {
@@ -218,6 +222,16 @@ function setBitN(_bitN) {
     reset();
 }
 
+function checkHeight() {
+    let diff = parseInt($('#main-container').css('height')) - parseInt($('#sec-container').css('height'));
+    if (diff < 0) {
+        $('#main-container').css('height', 'auto');
+    } else if (files.length <= 48) {
+        $('#main-container').css('height', '100%');
+        setTimeout(checkHeight, 0);
+    }
+}
+
 function reset() {
     status = 0;
     let bitmapBody = $('#bitmap-body');
@@ -238,6 +252,8 @@ function reset() {
         b.remove();
     }
     files = [new File(0, bitN, null, 'lightgrey', false, 720, 0, bitN * 2)];
+
+    checkHeight();
 }
 
 function select(len) {

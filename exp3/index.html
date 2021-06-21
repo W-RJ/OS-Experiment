@@ -56,87 +56,88 @@
     </nav>
 
     <div class="container" id="main-container">
-
-        <div class="row align-items-start">
-            <div class="col-4" id="col1">
-                <div class="row row-cols-auto" id="bitmap-head">
+        <div id="sec-container">
+            <div class="row align-items-start">
+                <div class="col-4" id="col1">
+                    <div class="row row-cols-auto" id="bitmap-head">
+                    </div>
+                    <div class="row row-cols-auto" id="bitmap-body">
+                    </div>
                 </div>
-                <div class="row row-cols-auto" id="bitmap-body">
+                <div class="col-1" id="col2">
+                    <div id="memline">
+                    </div>
                 </div>
-            </div>
-            <div class="col-1" id="col2">
-                <div id="memline">
-                </div>
-            </div>
-            <div class="col-7">
-                <div>
-                    <div class="row" style="text-align: end;">
-                        <div class="col-6">
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" aria-label="Sizing example input"
-                                    placeholder="标志" aria-describedby="inputGroup-sizing-default" id="add-tag">
-                                <input type="number" class="form-control" aria-label="Sizing example input"
-                                    placeholder="大小" aria-describedby="inputGroup-sizing-default" id="add-len">
-                                <button type="button" class="btn btn-primary" id="btn-backward"
-                                    onclick="onAlloc()">分配内存</button>
+                <div class="col-7">
+                    <div>
+                        <div class="row" style="text-align: end;">
+                            <div class="col-6">
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" aria-label="Sizing example input"
+                                        placeholder="标志" aria-describedby="inputGroup-sizing-default" id="add-tag">
+                                    <input type="number" class="form-control" aria-label="Sizing example input"
+                                        placeholder="大小" aria-describedby="inputGroup-sizing-default" id="add-len">
+                                    <button type="button" class="btn btn-primary" id="btn-backward"
+                                        onclick="onAlloc()">分配内存</button>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <button type="button" class="btn btn-primary" id="btn-random"
+                                    onclick="onRandom()">随机分配</button>
+                            </div>
+                            <div class="col-2">
+                                <button type="button" class="btn btn-primary" id="btn-random"
+                                    onclick="onRandomList()">随机序列</button>
+                            </div>
+                            <div class="col-2">
+                                <button type="button" class="btn btn-primary" id="btn-reset"
+                                    onclick="onReset()">全部重置</button>
                             </div>
                         </div>
-                        <div class="col-2">
-                            <button type="button" class="btn btn-primary" id="btn-random"
-                                onclick="onRandom()">随机分配</button>
-                        </div>
-                        <div class="col-2">
-                            <button type="button" class="btn btn-primary" id="btn-random"
-                                onclick="onRandomList()">随机序列</button>
-                        </div>
-                        <div class="col-2">
-                            <button type="button" class="btn btn-primary" id="btn-reset"
-                                onclick="onReset()">全部重置</button>
-                        </div>
-                    </div>
-                    <div class="row align-items-start">
-                        <div class="col-5">
-                            <table class="table table-striped" id="empty-table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">始址</th>
-                                        <th scope="col">长度</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="empty-body">
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="col-7">
-                            <table class="table table-striped" id="full-table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">始址</th>
-                                        <th scope="col">长度</th>
-                                        <th scope="col">标志</th>
-                                        <th scope="col">操作</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="full-body">
-                                </tbody>
-                            </table>
+                        <div class="row align-items-start">
+                            <div class="col-5">
+                                <table class="table table-striped" id="empty-table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">始址</th>
+                                            <th scope="col">长度</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="empty-body">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-7">
+                                <table class="table table-striped" id="full-table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">始址</th>
+                                            <th scope="col">长度</th>
+                                            <th scope="col">标志</th>
+                                            <th scope="col">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="full-body">
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <!-- <div class="col-2">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">长度</th>
+                                <th scope="col">标志</th>
+                                <th scope="col">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="infotable-body">
+                        </tbody>
+                    </table>
+                </div> -->
             </div>
-            <!-- <div class="col-2">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">长度</th>
-                            <th scope="col">标志</th>
-                            <th scope="col">操作</th>
-                        </tr>
-                    </thead>
-                    <tbody id="infotable-body">
-                    </tbody>
-                </table>
-            </div> -->
         </div>
     </div>
 
