@@ -1,0 +1,26 @@
+body {
+    font-size: large;
+}
+
+#limiter {
+    width: 50%;
+    height: 64px;
+    border-right: 2px solid black;
+    border-top: 2px solid black;
+    transition: width linear 0.5s;
+    margin-left: 4px;
+}
+
+#disk {
+    position: relative;
+    height: 64px;
+    border: 2px solid black;
+}
+
+#disk div {
+    position: absolute;
+    width: 0px;
+    height: 100%;
+    top: 0px;
+    border: 2px solid red;
+}

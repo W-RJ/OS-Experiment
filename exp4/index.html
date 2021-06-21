@@ -19,6 +19,102 @@
 <body>
     <!--TODO-->
 
+    <!--navbar-->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">操作系统实验</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">磁盘移臂调度</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">算法：</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            SSTF
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" onclick="sstf()">SSTF</a></li>
+                            <li><a class="dropdown-item" onclick="scanL()">SCAN左</a></li>
+                            <li><a class="dropdown-item" onclick="scanR()">SCAN右</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <form class="d-flex">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" id="main-container">
+
+        <div class="row" style="text-align: end;">
+            <div class="col-4">
+                <div class="input-group mb-3">
+                    <input type="number" class="form-control" aria-label="Sizing example input" placeholder="位置"
+                        aria-describedby="inputGroup-sizing-default" id="add-pos2">
+                    <button type="button" class="btn btn-primary" id="btn-backward"
+                        onclick="onSet()">设置位置</button>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="input-group mb-3">
+                        <input type="number" class="form-control" aria-label="Sizing example input" placeholder="位置"
+                            aria-describedby="inputGroup-sizing-default" id="add-pos">
+                    <button type="button" class="btn btn-primary" id="btn-backward"
+                        onclick="onAdd()">添加请求</button>
+                </div>
+            </div>
+            <div class="col-1">
+                <button type="button" class="btn btn-primary" id="btn-random" onclick="onRandom()">随机请求</button>
+            </div>
+            <div class="col-1">
+                <button type="button" class="btn btn-primary" id="btn-random-list" onclick="onRandomList()">随机序列</button>
+            </div>
+            <div class="col-1">
+                <button type="button" class="btn btn-primary" id="btn-reset" onclick="onReset()">全部重置</button>
+            </div>
+            <div class="col-1">
+                <button type="button" class="btn btn-primary" id="btn-forward" onclick="onForward()">单步执行</button>
+            </div>
+            <div class="col-1">
+                <button type="button" class="btn btn-primary" id="btn-continue" onclick="onContinue()">连续执行</button>
+            </div>
+        </div>
+        <table class="table table-striped" id="info-table">
+            <thead>
+            </thead>
+            <tbody id="info-body">
+                <tr id="info-pos">
+                    <th>位置</th>
+                </tr>
+                <tr id="info-order">
+                    <th>顺序</th>
+                </tr>
+                <!-- <tr id="info-op">
+                    <th>操作</th>
+                </tr> -->
+            </tbody>
+        </table>
+        <div id="limiter-container">
+            <div id="limiter"></div>
+        </div>
+        <div id="disk">
+        </div>
+
+    </div>
+
+
     <!-- JavaScript 文件是可选的。从以下两种建议中选择一个即可！ -->
 
     <!-- 选项 1：包含 Popper 的 Bootstrap 集成包 -->
