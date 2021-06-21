@@ -13,6 +13,8 @@ let nextId = 1;
 
 let randomId = 1;
 
+let status = 0;
+
 let delay = 1200;
 
 let colors = [
@@ -214,6 +216,7 @@ function setBitN(_bitN) {
 }
 
 function reset() {
+    status = 0;
     let bitmapBody = $('#bitmap-body');
     bitmapBody.empty();
     for (let i = 0; i < bitN; i++) {
@@ -380,4 +383,28 @@ function onRandomList() {
 
 function onDelFile(which) {
     free(parseInt($(which).parent().parent().attr('id').substring(5)));
+}
+
+function onNext() {
+    if (status === 0) {
+        for (let i = 2; i <= 50; i += 2) {
+            free(i);
+        }
+        status++;
+        $('#btn-next').html('插入五个')
+    // } else if (status === 1) {
+    //     for (let i in files) {
+    //         if (files[i].id >= 2 && files[i].id % 2 == 1) {
+    //             files[i].color = 'grey';
+    //             // files[i].show();
+    //             files[i].updateItem();
+    //         }
+    //     }
+    } else {
+        alloc(4, 'A.txt', 7);
+        alloc(3, 'B.txt', 5);
+        alloc(1, 'C.txt', 2);
+        alloc(5, 'D.txt', 9);
+        alloc(2, 'E.txt', 3.5);
+    }
 }
