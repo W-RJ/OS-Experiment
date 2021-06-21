@@ -531,3 +531,27 @@ function onComplete() {
         forward();
     }
 }
+
+function fcfs() {
+    algorithm = ALGORITHM_FCFS;
+    $('#navbarDropdown').html('FCFS');
+    reset();
+}
+
+function rr() {
+    algorithm = ALGORITHM_RR;
+    $('#navbarDropdown').html('RR');
+    reset();
+}
+
+function sjf() {
+    algorithm = ALGORITHM_SJF;
+    $('#navbarDropdown').html('SJF');
+    reset();
+}
+
+function hrn() {
+    algorithm = ALGORITHM_HRN;
+    $('#navbarDropdown').html('HRN');
+    reset();
+}
