@@ -29,7 +29,7 @@ let colors = [
     { fg: 'hsl(300,100%,50%)', base: 300 },
 ];
 
-class File {
+class FileBlock {
     constructor(start, len, tag, color, colorStd, colorBase, i, showLen) {
         this.id = nextId++;
         this.start = start;
@@ -46,7 +46,7 @@ class File {
         } else {
             $('#memline').children().eq(i).after('<div id="memline-' + this.id + '" style="background:lightgrey"></div>');
         }
-        if (files.length === 0) {
+        if (fileBlocks.length === 0) {
             this.show();
         } else {
             let tmp = this;
@@ -76,8 +76,8 @@ class File {
         let cnt = -1;
         for (let j = 0; j <= i; j++) {
             console.log(this.tag);
-            console.log(files[j].tag)
-            if (!((this.tag === null) ^ (files[j].tag === null))) {
+            console.log(fileBlocks[j].tag)
+            if (!((this.tag === null) ^ (fileBlocks[j].tag === null))) {
                 console.log('same');
                 cnt++;
             }
@@ -102,7 +102,7 @@ class File {
                 '<td class="item-len">' + this.showLen + '</td>' +
                 '<td>' + this.tag + '</td>' +
                 '<td style="padding: 2px;">' +
-                '<button type="button" class="btn-close" aria-label="Close" onclick="onDelFile(this)"></button>' +
+                '<button type="button" class="btn-close" aria-label="Close" onclick="onDelFileBlock(this)"></button>' +
                 '</td>' +
                 '</tr>';
             console.log(tmp);
@@ -180,7 +180,7 @@ class File {
     }
 }
 
-let files = [];
+let fileBlocks = [];
 
 $(document).ready(function () {
     let bitmapHead = $('#bitmap-head');
@@ -192,8 +192,8 @@ $(document).ready(function () {
 });
 
 function checkColor(base) {
-    for (let file of files) {
-        if (Math.abs(file.colorBase - base) < Math.floor(160 / files.length)) {
+    for (let fileBlock of fileBlocks) {
+        if (Math.abs(fileBlock.colorBase - base) < Math.floor(160 / fileBlocks.length)) {
             return false;
         }
     }
@@ -226,7 +226,7 @@ function checkHeight() {
     let diff = parseInt($('#main-container').css('height')) - parseInt($('#sec-container').css('height'));
     if (diff < 0) {
         $('#main-container').css('height', 'auto');
-    } else if (files.length <= 48) {
+    } else if (fileBlocks.length <= 48) {
         $('#main-container').css('height', '100%');
         setTimeout(checkHeight, 0);
     }
@@ -245,13 +245,13 @@ function reset() {
     $('#memline').empty();
     $('#empty-body').empty();
     $('#full-body').empty();
-    for (let b of files) {
+    for (let b of fileBlocks) {
         if (b.tag !== null) {
             b.resetTag();
         }
         b.remove();
     }
-    files = [new File(0, bitN, null, 'lightgrey', false, 720, 0, bitN * 2)];
+    fileBlocks = [new FileBlock(0, bitN, null, 'lightgrey', false, 720, 0, bitN * 2)];
 
     checkHeight();
 }
@@ -261,31 +261,31 @@ function select(len) {
     let bestId = -1;
     switch (algorithm) {
         case ALGORITHM_FF:
-            for (i = 0; i < files.length; i++) {
-                if (files[i].tag !== null) {
+            for (i = 0; i < fileBlocks.length; i++) {
+                if (fileBlocks[i].tag !== null) {
                     continue;
                 }
-                if (files[i].len >= len) {
+                if (fileBlocks[i].len >= len) {
                     return i;
                 }
             }
             return -1;
         case ALGORITHM_BF:
-            for (i in files) {
-                if (files[i].tag !== null) {
+            for (i in fileBlocks) {
+                if (fileBlocks[i].tag !== null) {
                     continue;
                 }
-                if (files[i].len >= len && (bestId === -1 || files[i].len < files[bestId].len)) {
+                if (fileBlocks[i].len >= len && (bestId === -1 || fileBlocks[i].len < fileBlocks[bestId].len)) {
                     bestId = i;
                 }
             }
             return bestId;
         case ALGORITHM_WF:
-            for (i in files) {
-                if (files[i].tag !== null) {
+            for (i in fileBlocks) {
+                if (fileBlocks[i].tag !== null) {
                     continue;
                 }
-                if (files[i].len >= len && (bestId === -1 || files[i].len > files[bestId].len)) {
+                if (fileBlocks[i].len >= len && (bestId === -1 || fileBlocks[i].len > fileBlocks[bestId].len)) {
                     bestId = i;
                 }
             }
@@ -300,11 +300,11 @@ function alloc(len, tag, showLen) {
         // TODO
         return false;
     }
-    let start = files[selectedId].start;
-    files[selectedId].start += len;
-    if (!files[selectedId].setLen(files[selectedId].len - len)) {
-        files[selectedId].remove();
-        files.splice(selectedId, 1);
+    let start = fileBlocks[selectedId].start;
+    fileBlocks[selectedId].start += len;
+    if (!fileBlocks[selectedId].setLen(fileBlocks[selectedId].len - len)) {
+        fileBlocks[selectedId].remove();
+        fileBlocks.splice(selectedId, 1);
     }
     let colorFg, colorBg, colorStd, colorBase;
     if (colors.length > 0) {
@@ -319,41 +319,41 @@ function alloc(len, tag, showLen) {
         colorStd = false;
     }
     console.log(selectedId);
-    files.splice(selectedId, 0, new File(start, len, tag, colorFg, colorStd, colorBase, selectedId, showLen));
+    fileBlocks.splice(selectedId, 0, new FileBlock(start, len, tag, colorFg, colorStd, colorBase, selectedId, showLen));
     return true;
 }
 
 function free(id) {
     console.log('id:', id);
     let i;
-    for (i = 0; i < files.length; i++) {
-        if (files[i].id === id) {
+    for (i = 0; i < fileBlocks.length; i++) {
+        if (fileBlocks[i].id === id) {
             break;
         }
     }
-    let preFree = i > 0 && files[i - 1].tag === null;
-    let postFree = i < files.length - 1 && files[i + 1].tag === null;
-    files[i].resetTag(i, preFree || postFree);
+    let preFree = i > 0 && fileBlocks[i - 1].tag === null;
+    let postFree = i < fileBlocks.length - 1 && fileBlocks[i + 1].tag === null;
+    fileBlocks[i].resetTag(i, preFree || postFree);
     if (!preFree && !postFree) {
         // TODO
     } else if (!preFree && postFree) {
         setTimeout(function () {
-            files[i].setLen(files[i].len + files[i + 1].len);
-            files[i + 1].remove();
-            files.splice(i + 1, 1);
+            fileBlocks[i].setLen(fileBlocks[i].len + fileBlocks[i + 1].len);
+            fileBlocks[i + 1].remove();
+            fileBlocks.splice(i + 1, 1);
         }, delay);
     } else if (preFree && !postFree) {
         setTimeout(function () {
-            files[i - 1].setLen(files[i - 1].len + files[i].len);
-            files[i].remove();
-            files.splice(i, 1);
+            fileBlocks[i - 1].setLen(fileBlocks[i - 1].len + fileBlocks[i].len);
+            fileBlocks[i].remove();
+            fileBlocks.splice(i, 1);
         }, delay);
     } else {
         setTimeout(function () {
-            files[i - 1].setLen(files[i - 1].len + files[i].len + files[i + 1].len);
-            files[i].remove();
-            files[i + 1].remove();
-            files.splice(i, 2);
+            fileBlocks[i - 1].setLen(fileBlocks[i - 1].len + fileBlocks[i].len + fileBlocks[i + 1].len);
+            fileBlocks[i].remove();
+            fileBlocks[i + 1].remove();
+            fileBlocks.splice(i, 2);
         }, delay);
     }
 }
@@ -391,14 +391,14 @@ function onRandomList() {
     let tmp = Math.ceil(Math.random() * 10);
     while (alloc(Math.ceil(tmp / 2), randomId + '.txt', tmp)) {
         randomId++;
-        if (files.length > 50) {
+        if (fileBlocks.length > 50) {
             break;
         }
         tmp = Math.ceil(Math.random() * 10);
     }
 }
 
-function onDelFile(which) {
+function onDelFileBlock(which) {
     free(parseInt($(which).parent().parent().attr('id').substring(5)));
 }
 
@@ -410,11 +410,11 @@ function onNext() {
         status++;
         $('#btn-next').html('插入五个')
         // } else if (status === 1) {
-        //     for (let i in files) {
-        //         if (files[i].id >= 2 && files[i].id % 2 == 1) {
-        //             files[i].color = 'grey';
-        //             // files[i].show();
-        //             files[i].updateItem();
+        //     for (let i in fileBlocks) {
+        //         if (fileBlocks[i].id >= 2 && fileBlocks[i].id % 2 == 1) {
+        //             fileBlocks[i].color = 'grey';
+        //             // fileBlocks[i].show();
+        //             fileBlocks[i].updateItem();
         //         }
         //     }
     } else {
