@@ -265,3 +265,36 @@ function onContinue() {
         doContinue();
     }
 }
+
+function onSet() {
+    let pos = parseInt($('#add-pos2').val());
+    if (isNaN(pos) || pos < 0 || pos >= maxPos) {
+        // TODO
+        return;
+    }
+    else {
+        curPos = pos;
+        reset();
+        $('#limiter').css('width', 100 * curPos / maxPos + '%');
+    }
+}
+
+function sstf() {
+    algorithm = ALGORITHM_SSTF;
+    $('#navbarDropdown').html('SSTF');
+    reset();
+}
+
+function scanL() {
+    algorithm = ALGORITHM_SCAN;
+    curDir = -1;
+    $('#navbarDropdown').html('SCAN左');
+    reset();
+}
+
+function scanR() {
+    algorithm = ALGORITHM_SCAN;
+    curDir = 1;
+    $('#navbarDropdown').html('SCAN右');
+    reset();
+}
