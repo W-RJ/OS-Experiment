@@ -1,0 +1,62 @@
+body {
+    font-size: large;
+}
+
+#main-container {
+    min-width: 1320px;
+    overflow: hidden;
+    background: #efefefdf;
+}
+
+/* bitmap */
+
+#bitmap-head {
+    margin-left: 0px;
+    text-align: center;
+}
+
+#bitmap-head div {
+    width: 26px;
+    height: 26px;
+    border-bottom: 2px solid black;
+    text-align: center;
+}
+
+#bitmap-body {
+    margin-left: 0px;
+    text-align: center;
+}
+
+#bitmap-body div {
+    width: 26px;
+    height: 26px;
+    border: 1px solid #FFFFFF;
+    text-align: center;
+    transition: background-color linear 0.5s;
+}
+
+#memline {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    margin-top: 26px;
+    border: 2px solid black;
+    background-color: lightgray;
+}
+
+#memline div {
+    height: 0px;
+    flex: 0;
+    transition: background-color linear;
+    transition-duration: 0.5s;
+    border: 1px solid black;
+}
+
+#empty-table {
+    text-align: center;
+}
+
+#full-table {
+    text-align: center;
+}
