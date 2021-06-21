@@ -29,15 +29,15 @@ const POS_COMPLETED_DL = 2;
 const POS_COMPLETED_DT = 2;
 
 let colors = [
-    {fg: 'hsl(330,100%,60%)', bg: 'hsl(330,100%,85%)', base: 330},
-    {fg: 'hsl(30,100%,50%)', bg: 'hsl(30,100%,85%)', base: 30},
-    {fg: 'hsl(60,100%,45%)', bg: 'hsl(60,100%,85%)', base: 60},
-    {fg: 'hsl(90,100%,50%)', bg: 'hsl(90,100%,85%)', base: 90},
-    {fg: 'hsl(120,100%,50%)', bg: 'hsl(120,100%,85%)', base: 120},
-    {fg: 'hsl(180,100%,45%)', bg: 'hsl(180,100%,85%)', base: 180},
-    {fg: 'hsl(210,100%,65%)', bg: 'hsl(210,100%,85%)', base: 210},
-    {fg: 'hsl(270,100%,65%)', bg: 'hsl(270,100%,85%)', base: 270},
-    {fg: 'hsl(300,100%,50%)', bg: 'hsl(300,100%,85%)', base: 300},
+    { fg: 'hsl(330,100%,60%)', bg: 'hsl(330,100%,85%)', base: 330 },
+    { fg: 'hsl(30,100%,50%)', bg: 'hsl(30,100%,85%)', base: 30 },
+    { fg: 'hsl(60,100%,45%)', bg: 'hsl(60,100%,85%)', base: 60 },
+    { fg: 'hsl(90,100%,50%)', bg: 'hsl(90,100%,85%)', base: 90 },
+    { fg: 'hsl(120,100%,50%)', bg: 'hsl(120,100%,85%)', base: 120 },
+    { fg: 'hsl(180,100%,45%)', bg: 'hsl(180,100%,85%)', base: 180 },
+    { fg: 'hsl(210,100%,65%)', bg: 'hsl(210,100%,85%)', base: 210 },
+    { fg: 'hsl(270,100%,65%)', bg: 'hsl(270,100%,85%)', base: 270 },
+    { fg: 'hsl(300,100%,50%)', bg: 'hsl(300,100%,85%)', base: 300 },
 ];
 
 let randomID = 1;
@@ -75,7 +75,7 @@ class Process {
 
     finalize() {
         if (this.colorStd) {
-            colors.push({fg: this.colorFg, bg: this.colorBg, base: this.colorBase});
+            colors.push({ fg: this.colorFg, bg: this.colorBg, base: this.colorBase });
         }
     }
 
@@ -202,7 +202,7 @@ let processes = [];
 let readyProcessIDs = [];
 let runningProcessID = -1;
 
-$(document).ready(function() {
+$(document).ready(function () {
 
 });
 
@@ -220,15 +220,14 @@ function getRandomColor() {
     do {
         h = Math.floor(Math.random() * 360);
     } while (h > 225 && h < 255 || !checkColor(h));
-    if (h > 195 && h < 285)
-    {
-        return {fg: 'hsl(' + h + ',100%,65%)', bg: 'hsl(' + h + ',100%,85%)', base: h};
+    if (h > 195 && h < 285) {
+        return { fg: 'hsl(' + h + ',100%,65%)', bg: 'hsl(' + h + ',100%,85%)', base: h };
     } else if (h > 320 || h < 10) {
-        return {fg: 'hsl(' + h + ',100%,60%)', bg: 'hsl(' + h + ',100%,85%)', base: h};
+        return { fg: 'hsl(' + h + ',100%,60%)', bg: 'hsl(' + h + ',100%,85%)', base: h };
     } else if (h >= 50 && h <= 70 || h >= 170 && h <= 190) {
-        return {fg: 'hsl(' + h + ',100%,45%)', bg: 'hsl(' + h + ',100%,85%)', base: h};
+        return { fg: 'hsl(' + h + ',100%,45%)', bg: 'hsl(' + h + ',100%,85%)', base: h };
     } else {
-        return {fg: 'hsl(' + h + ',100%,50%)', bg: 'hsl(' + h + ',100%,85%)', base: h};
+        return { fg: 'hsl(' + h + ',100%,50%)', bg: 'hsl(' + h + ',100%,85%)', base: h };
     }
 }
 
@@ -237,7 +236,7 @@ function calFinalTime() {
     for (let i in processes) {
         sortedIDs.push(i);
     }
-    sortedIDs.sort(function(a, b) {
+    sortedIDs.sort(function (a, b) {
         return processes[a].arrivalTime - processes[b].arrivalTime;
     });
     finalTime = 0;
@@ -484,8 +483,7 @@ function onAddProcess() {
         // TODO
         return;
     }
-    else if (addProcess(name, arrivalTime, requiredTime) === false)
-    {
+    else if (addProcess(name, arrivalTime, requiredTime) === false) {
         // TODO
         return;
     }

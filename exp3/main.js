@@ -16,15 +16,15 @@ let delay = 1200;
 let randomId = 1;
 
 let colors = [
-    {fg: 'hsl(330,100%,60%)', base: 330},
-    {fg: 'hsl(30,100%,50%)', base: 30},
-    {fg: 'hsl(60,100%,45%)', base: 60},
-    {fg: 'hsl(90,100%,50%)', base: 90},
-    {fg: 'hsl(120,100%,50%)', base: 120},
-    {fg: 'hsl(180,100%,45%)', base: 180},
-    {fg: 'hsl(210,100%,65%)', base: 210},
-    {fg: 'hsl(270,100%,65%)', base: 270},
-    {fg: 'hsl(300,100%,50%)', base: 300},
+    { fg: 'hsl(330,100%,60%)', base: 330 },
+    { fg: 'hsl(30,100%,50%)', base: 30 },
+    { fg: 'hsl(60,100%,45%)', base: 60 },
+    { fg: 'hsl(90,100%,50%)', base: 90 },
+    { fg: 'hsl(120,100%,50%)', base: 120 },
+    { fg: 'hsl(180,100%,45%)', base: 180 },
+    { fg: 'hsl(210,100%,65%)', base: 210 },
+    { fg: 'hsl(270,100%,65%)', base: 270 },
+    { fg: 'hsl(300,100%,50%)', base: 300 },
 ];
 
 class Block {
@@ -47,7 +47,7 @@ class Block {
             this.show();
         } else {
             let tmp = this;
-            setTimeout(function() {
+            setTimeout(function () {
                 tmp.show();
             }, 0);
         }
@@ -92,7 +92,7 @@ class Block {
                 $('#empty-body').children().eq(cnt).after(tmp);
             }
         } else {
-            let tmp = '<tr id="item-' + this.id + '" style="background:' + this.color +'">' +
+            let tmp = '<tr id="item-' + this.id + '" style="background:' + this.color + '">' +
                 '<td class="item-start">' + this.start + '</td>' +
                 '<td class="item-len">' + this.len + '</td>' +
                 '<td>' + this.tag + '</td>' +
@@ -112,7 +112,7 @@ class Block {
         let item = $('#item-' + this.id);
         item.children().css('font-weight', '900');
         item.children().css('font-size', 'x-large');
-        setTimeout(function() {
+        setTimeout(function () {
             item.children().css('font-weight', 'normal');
             item.children().css('font-size', 'normal');
         }, 500);
@@ -125,7 +125,7 @@ class Block {
         item.children('.item-len').html(this.len);
         item.children().css('font-weight', '900');
         item.children().css('font-size', 'x-large');
-        setTimeout(function() {
+        setTimeout(function () {
             item.children().css('font-weight', 'normal');
             item.children().css('font-size', 'normal');
         }, 500);
@@ -139,7 +139,7 @@ class Block {
     resetTag(i, chColor) {
         this.tag = null;
         if (this.colorStd) {
-            colors.push({fg: this.color, base: this.colorBase});
+            colors.push({ fg: this.color, base: this.colorBase });
         }
         if (chColor) {
             this.color = 'darkgrey';
@@ -156,7 +156,7 @@ class Block {
 
         $('#item-' + this.id).remove();
 
-        this.showItem(i-1);
+        this.showItem(i - 1);
     }
 
     setLen(len) {
@@ -175,7 +175,7 @@ class Block {
 
 let blocks = [];
 
-$(document).ready(function() {
+$(document).ready(function () {
     let bitmapHead = $('#bitmap-head');
     for (let i = 0; i < bitmapColN; i++) {
         bitmapHead.append('<div class="col">' + i + '</div>')
@@ -199,15 +199,14 @@ function getRandomColor() {
         h = Math.floor(Math.random() * 360);
     } while (h > 225 && h < 255 || !checkColor(h));
     console.log(h);
-    if (h > 195 && h < 285)
-    {
-        return {fg: 'hsl(' + h + ',100%,65%)', base: h};
+    if (h > 195 && h < 285) {
+        return { fg: 'hsl(' + h + ',100%,65%)', base: h };
     } else if (h > 320 || h < 10) {
-        return {fg: 'hsl(' + h + ',100%,60%)', base: h};
+        return { fg: 'hsl(' + h + ',100%,60%)', base: h };
     } else if (h >= 50 && h <= 70 || h >= 170 && h <= 190) {
-        return {fg: 'hsl(' + h + ',100%,45%)', base: h};
+        return { fg: 'hsl(' + h + ',100%,45%)', base: h };
     } else {
-        return {fg: 'hsl(' + h + ',100%,50%)', base: h};
+        return { fg: 'hsl(' + h + ',100%,50%)', base: h };
     }
 }
 
@@ -240,8 +239,7 @@ function reset() {
 function select(len) {
     let i;
     let bestId = -1;
-    switch (algorithm)
-    {
+    switch (algorithm) {
         case ALGORITHM_FF:
             for (i = 0; i < blocks.length; i++) {
                 if (blocks[i].tag !== null) {
@@ -313,28 +311,28 @@ function free(id) {
             break;
         }
     }
-    let preFree = i > 0 && blocks[i-1].tag === null;
-    let postFree = i < blocks.length - 1 && blocks[i+1].tag === null;
+    let preFree = i > 0 && blocks[i - 1].tag === null;
+    let postFree = i < blocks.length - 1 && blocks[i + 1].tag === null;
     blocks[i].resetTag(i, preFree || postFree);
     if (!preFree && !postFree) {
         // TODO
     } else if (!preFree && postFree) {
-        setTimeout(function() {
-            blocks[i].setLen(blocks[i].len + blocks[i+1].len);
-            blocks[i+1].remove();
+        setTimeout(function () {
+            blocks[i].setLen(blocks[i].len + blocks[i + 1].len);
+            blocks[i + 1].remove();
             blocks.splice(i + 1, 1);
         }, delay);
     } else if (preFree && !postFree) {
-        setTimeout(function() {
-            blocks[i-1].setLen(blocks[i-1].len + blocks[i].len);
+        setTimeout(function () {
+            blocks[i - 1].setLen(blocks[i - 1].len + blocks[i].len);
             blocks[i].remove();
             blocks.splice(i, 1);
         }, delay);
     } else {
-        setTimeout(function() {
-            blocks[i-1].setLen(blocks[i-1].len + blocks[i].len + blocks[i+1].len);
+        setTimeout(function () {
+            blocks[i - 1].setLen(blocks[i - 1].len + blocks[i].len + blocks[i + 1].len);
             blocks[i].remove();
-            blocks[i+1].remove();
+            blocks[i + 1].remove();
             blocks.splice(i, 2);
         }, delay);
     }
@@ -354,8 +352,7 @@ function onAlloc() {
         // TODO
         return;
     }
-    else if (alloc(len, tag) === false)
-    {
+    else if (alloc(len, tag) === false) {
         // TODO
         return;
     }
