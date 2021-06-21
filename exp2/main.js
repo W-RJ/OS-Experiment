@@ -29,15 +29,15 @@ const POS_COMPLETED_DL = 2;
 const POS_COMPLETED_DT = 2;
 
 let colors = [
-    {fg: 'hsl(330,100%,60%)', bg: 'hsl(330,100%,85%)'},
-    {fg: 'hsl(30,100%,50%)', bg: 'hsl(30,100%,85%)'},
-    {fg: 'hsl(60,100%,45%)', bg: 'hsl(60,100%,85%)'},
-    {fg: 'hsl(90,100%,50%)', bg: 'hsl(90,100%,85%)'},
-    {fg: 'hsl(120,100%,50%)', bg: 'hsl(120,100%,85%)'},
-    {fg: 'hsl(180,100%,45%)', bg: 'hsl(180,100%,85%)'},
-    {fg: 'hsl(210,100%,65%)', bg: 'hsl(210,100%,85%)'},
-    {fg: 'hsl(270,100%,65%)', bg: 'hsl(270,100%,85%)'},
-    {fg: 'hsl(300,100%,50%)', bg: 'hsl(300,100%,85%)'},
+    {fg: 'hsl(330,100%,60%)', bg: 'hsl(330,100%,85%)', base: 330},
+    {fg: 'hsl(30,100%,50%)', bg: 'hsl(30,100%,85%)', base: 30},
+    {fg: 'hsl(60,100%,45%)', bg: 'hsl(60,100%,85%)', base: 60},
+    {fg: 'hsl(90,100%,50%)', bg: 'hsl(90,100%,85%)', base: 90},
+    {fg: 'hsl(120,100%,50%)', bg: 'hsl(120,100%,85%)', base: 120},
+    {fg: 'hsl(180,100%,45%)', bg: 'hsl(180,100%,85%)', base: 180},
+    {fg: 'hsl(210,100%,65%)', bg: 'hsl(210,100%,85%)', base: 210},
+    {fg: 'hsl(270,100%,65%)', bg: 'hsl(270,100%,85%)', base: 270},
+    {fg: 'hsl(300,100%,50%)', bg: 'hsl(300,100%,85%)', base: 300},
 ];
 
 let randomID = 1;
@@ -57,11 +57,12 @@ let delay = 500;
 let preDelay = -1;
 
 class Process {
-    constructor(name, colorFg, colorBg, colorStd, arrivalTime, requiredTime) {
+    constructor(name, colorFg, colorBg, colorStd, colorBase, arrivalTime, requiredTime) {
         this.name = name;
         this.colorFg = colorFg;
         this.colorBg = colorBg;
         this.colorStd = colorStd;
+        this.colorBase = colorBase;
 
         this.arrivalTime = arrivalTime;
         this.requiredTime = requiredTime;
@@ -74,7 +75,7 @@ class Process {
 
     finalize() {
         if (this.colorStd) {
-            colors.push({fg: this.colorFg, bg: this.colorBg});
+            colors.push({fg: this.colorFg, bg: this.colorBg, base: this.colorBase});
         }
     }
 
@@ -205,16 +206,25 @@ $(document).ready(function() {
 
 });
 
+function checkColor(base) {
+    for (let process of processes) {
+        if (Math.abs(process.colorBase - base) < Math.floor(160 / process.length)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 function getRandomColor() {
     let h;
     do {
         h = Math.floor(Math.random() * 360);
-    } while (h > 225 && h < 255);
+    } while (h > 225 && h < 255 || !checkColor(h));
     if (h > 195 && h < 285)
     {
-        return {fg: 'hsl(' + h + ',100%,65%)', bg: 'hsl(' + h + ',100%,85%)'};
+        return {fg: 'hsl(' + h + ',100%,65%)', bg: 'hsl(' + h + ',100%,85%)', base: h};
     } else {
-        return {fg: 'hsl(' + h + ',100%,50%)', bg: 'hsl(' + h + ',100%,85%)'};
+        return {fg: 'hsl(' + h + ',100%,50%)', bg: 'hsl(' + h + ',100%,85%)', base: h};
     }
 }
 
@@ -373,19 +383,21 @@ function addProcess(name, arrivalTime, requiredTime) {
             return false;
         }
     }
-    let colorFg, colorBg, colorStd;
+    let colorFg, colorBg, colorStd, colorBase;
     if (colors.length > 0) {
         colorFg = colors[0].fg;
         colorBg = colors[0].bg;
+        colorBase = colors[0].base;
         colors.shift();
         colorStd = true;
     } else {
         let ret = getRandomColor();
         colorFg = ret.fg;
         colorBg = ret.bg;
+        colorBase = ret.base;
         colorStd = false;
     }
-    processes.push(new Process(name, colorFg, colorBg, colorStd,
+    processes.push(new Process(name, colorFg, colorBg, colorStd, colorBase,
         arrivalTime, requiredTime));
     $('#infotable-body').append('\
         <tr id="infotable-' + name + '" style="background-image: linear-gradient(to right, ' + colorFg + ' 50%, ' + colorBg + ' 50%);">\
