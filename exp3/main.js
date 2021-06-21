@@ -68,26 +68,17 @@ class Block {
     }
 
     showItem(i) {
-        console.log(i);
-        console.log('hello');
         let cnt = -1;
         for (let j = 0; j <= i; j++) {
-            console.log(this.tag);
-            console.log(blocks[j].tag)
             if (!((this.tag === null) ^ (blocks[j].tag === null))) {
-                console.log('same');
                 cnt++;
             }
         }
-        console.log('hi');
         if (this.tag === null) {
             let tmp = '<tr id="item-' + this.id + '">' +
                 '<td class="item-start">' + this.start + '</td>' +
                 '<td class="item-len">' + this.len + '</td>' +
                 '</tr>';
-            console.log(tmp);
-            console.log(this.start);
-            console.log('cnt:', cnt);
             if (cnt === -1) {
                 $('#empty-body').prepend(tmp);
             } else {
@@ -102,9 +93,6 @@ class Block {
                 '<button type="button" class="btn-close" aria-label="Close" onclick="onDelBlock(this)"></button>' +
                 '</td>' +
                 '</tr>';
-            console.log(tmp);
-            console.log(this.start);
-            console.log('cnt:', cnt);
             if (cnt === -1) {
                 $('#full-body').prepend(tmp);
             } else {
@@ -121,7 +109,6 @@ class Block {
     }
 
     updateItem() {
-        console.log('updateItem');
         let item = $('#item-' + this.id);
         item.children('.item-start').html(this.start);
         item.children('.item-len').html(this.len);
@@ -202,7 +189,6 @@ function getRandomColor() {
     do {
         h = Math.floor(Math.random() * 360);
     } while (h > 225 && h < 255 || !checkColor(h));
-    console.log(h);
     if (h > 195 && h < 285) {
         return { fg: 'hsl(' + h + ',100%,65%)', base: h };
     } else if (h > 320 || h < 10) {
@@ -314,13 +300,11 @@ function alloc(len, tag) {
         colorBase = ret.base;
         colorStd = false;
     }
-    console.log(selectedId);
     blocks.splice(selectedId, 0, new Block(start, len, tag, colorFg, colorStd, colorBase, selectedId));
     return true;
 }
 
 function free(id) {
-    console.log('id:', id);
     let i;
     for (i = 0; i < blocks.length; i++) {
         if (blocks[i].id === id) {

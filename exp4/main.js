@@ -147,9 +147,6 @@ function select() {
             if (poses[i].order >= 0) {
                 continue;
             }
-            if (res !== -1) {
-                console.log(Math.abs(poses[res].pos - curPos), Math.abs(poses[i] - curPos));
-            }
             if (res === -1 || Math.abs(poses[res].pos - curPos) > Math.abs(poses[i].pos - curPos)) {
                 res = i;
             }
