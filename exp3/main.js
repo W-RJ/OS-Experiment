@@ -377,3 +377,21 @@ function onRandomList() {
 function onDelBlock(which) {
     free(parseInt($(which).parent().parent().attr('id').substring(5)));
 }
+
+function ff() {
+    algorithm = ALGORITHM_FF;
+    $('#navbarDropdown').html('FF');
+    reset();
+}
+
+function bf() {
+    algorithm = ALGORITHM_BF;
+    $('#navbarDropdown').html('BF');
+    reset();
+}
+
+function wf() {
+    algorithm = ALGORITHM_WF;
+    $('#navbarDropdown').html('WF');
+    reset();
+}
