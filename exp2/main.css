@@ -1,11 +1,21 @@
+html {
+    height: 100%;
+}
+
 body {
+    height: 100%;
     font-size: large;
 }
 
 #main-container {
     min-width: 1440px;
+    height: 100%;
     overflow: hidden;
-    background: #7f7f7f1f;
+    background: #efefefdf;
+}
+
+#top-container {
+    min-height: 400px;
 }
 
 /* infotable */
@@ -80,7 +90,7 @@ body {
 #statuschart-container {
     position: relative;
     width: 702px;
-    height: 256px;
+    min-height: 256px;
     overflow: hidden;
 }
 

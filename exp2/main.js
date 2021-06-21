@@ -263,6 +263,13 @@ function reset() {
     }
     $('#timeline-limiter').css('width', '0%');
     $('#timechart-limiter').css('width', '0%');
+    let diff = parseInt($('#main-container').css('height')) - parseInt($('#sec-container').css('height'));
+    if (diff <= 0) {
+        $('#main-container').css('height', 'auto');
+    } else if (processes.length <= 12) {
+        $('#main-container').css('height', '100%');
+        setTimeout(reset, 0);
+    }
     readyProcessIDs.splice(0, readyProcessIDs.length);
     runningProcessID = -1;
     curTime = 0;
