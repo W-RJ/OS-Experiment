@@ -79,8 +79,8 @@ class FileBlock {
         }
         if (this.tag === null) {
             let tmp = '<tr id="item-' + this.id + '">' +
-                '<td class="item-start">' + this.start + '</td>' +
-                '<td class="item-len">' + this.showLen + '</td>' +
+                '<td class="item-start">' + this.start * 2 + 'K</td>' +
+                '<td class="item-len">' + this.showLen + 'K</td>' +
                 '</tr>';
             if (cnt === -1) {
                 $('#empty-body').prepend(tmp);
@@ -89,9 +89,9 @@ class FileBlock {
             }
         } else {
             let tmp = '<tr id="item-' + this.id + '" style="background:' + this.color + '">' +
-                '<td class="item-start">' + this.start + '</td>' +
-                '<td class="item-len">' + this.showLen + '</td>' +
-                '<td>' + this.tag + '</td>' +
+                '<td class="item-start">' + this.start * 2 + 'K</td>' +
+                '<td class="item-len">' + this.showLen + 'K</td>' +
+                '<td>' + this.name + '</td>' +
                 '<td style="padding: 2px;">' +
                 '<button type="button" class="btn-close" aria-label="Close" onclick="onDelFileBlock(this)"></button>' +
                 '</td>' +
@@ -113,8 +113,8 @@ class FileBlock {
 
     updateItem() {
         let item = $('#item-' + this.id);
-        item.children('.item-start').html(this.start);
-        item.children('.item-len').html(this.len);
+        item.children('.item-start').html(this.start * 2 + 'K');
+        item.children('.item-len').html(this.showLen + 'K');
         item.children().css('font-weight', '900');
         item.children().css('font-size', 'x-large');
         setTimeout(function () {
@@ -132,6 +132,7 @@ class FileBlock {
 
     resetTag(i, chColor) {
         this.tag = null;
+        this.showLen = this.len * 2;
         if (this.colorStd) {
             colors.push({ fg: this.color, base: this.colorBase });
         }
@@ -155,6 +156,7 @@ class FileBlock {
 
     setLen(len) {
         this.len = len;
+        this.showLen = len * 2;
         this.color = 'lightgrey';
         this.updateItem();
         if (this.len === 0) {
