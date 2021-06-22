@@ -33,12 +33,12 @@ $(document).ready(function () {
                     data: [
                         {
                             x: curPos,
-                            y: 0
-                        }
+                            y: 0,
+                        },
                     ],
                     backgroundColor: 'rgb(0,0,0,0)',
                     borderColor: '#3F5F7F',
-                    tension: 0
+                    tension: 0,
                 },
             ],
         },
@@ -49,18 +49,28 @@ $(document).ready(function () {
                     {
                         type: 'linear',
                         position: 'top',
+                        ticks: {
+                            min: 0,
+                            max: maxPos - 1,
+                        },
                     },
                 ],
                 yAxes: [
                     {
                         type: 'linear',
                         ticks: {
-                            reverse: "true"
-                        }
+                            reverse: "true",
+                            // min: 0,
+                            // max: 1,
+                        },
                     },
                 ],
-            }
-        }
+            },
+            animation: {
+                duration: delay,
+                easing: "linear",
+            },
+        },
     });
 });
 
@@ -122,6 +132,8 @@ function show() {
 function add(pos) {
     poses.push(new Pos(pos));
     reset();
+    // chart.options.scales.yAxes[0].ticks.max = poses.length;
+    // chart.update();
     return true;
 }
 
