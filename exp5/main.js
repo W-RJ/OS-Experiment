@@ -29,13 +29,13 @@ let colors = [
     { fg: 'hsl(300,100%,50%)', base: 300 },
 ];
 
-class FileBlock {
-    constructor(start, len, tag, color, colorStd, colorBase, i, showLen) {
+class FileArea {
+    constructor(name, start, showLen, color, colorStd, colorBase, i) {
         this.id = nextId++;
         this.start = start;
-        this.len = len;
+        this.len = Math.ceil(showLen / 2);
         this.showLen = showLen;
-        this.tag = tag;
+        this.name = name;
         this.color = color;
         this.colorStd = colorStd;
         this.colorBase = colorBase;
@@ -46,7 +46,7 @@ class FileBlock {
         } else {
             $('#memline').children().eq(i).after('<div id="memline-' + this.id + '" style="background:lightgrey"></div>');
         }
-        if (fileBlocks.length === 0) {
+        if (fileAreas.length === 0) {
             this.show();
         } else {
             let tmp = this;
@@ -73,11 +73,11 @@ class FileBlock {
     showItem(i) {
         let cnt = -1;
         for (let j = 0; j <= i; j++) {
-            if (!((this.tag === null) ^ (fileBlocks[j].tag === null))) {
+            if (!((this.name === null) ^ (fileAreas[j].name === null))) {
                 cnt++;
             }
         }
-        if (this.tag === null) {
+        if (this.name === null) {
             let tmp = '<tr id="item-' + this.id + '">' +
                 '<td class="item-start">' + this.start * 2 + 'K</td>' +
                 '<td class="item-len">' + this.showLen + 'K</td>' +
@@ -93,7 +93,7 @@ class FileBlock {
                 '<td class="item-len">' + this.showLen + 'K</td>' +
                 '<td>' + this.name + '</td>' +
                 '<td style="padding: 2px;">' +
-                '<button type="button" class="btn-close" aria-label="Close" onclick="onDelFileBlock(this)"></button>' +
+                '<button type="button" class="btn-close" aria-label="Close" onclick="onDelFileArea(this)"></button>' +
                 '</td>' +
                 '</tr>';
             if (cnt === -1) {
@@ -130,8 +130,8 @@ class FileBlock {
         checkHeight();
     }
 
-    resetTag(i, chColor) {
-        this.tag = null;
+    resetName(i, chColor) {
+        this.name = null;
         this.showLen = this.len * 2;
         if (this.colorStd) {
             colors.push({ fg: this.color, base: this.colorBase });
@@ -169,7 +169,7 @@ class FileBlock {
     }
 }
 
-let fileBlocks = [];
+let fileAreas = [];
 
 $(document).ready(function () {
     let bitmapHead = $('#bitmap-head');
@@ -181,8 +181,8 @@ $(document).ready(function () {
 });
 
 function checkColor(base) {
-    for (let fileBlock of fileBlocks) {
-        if (Math.abs(fileBlock.colorBase - base) < Math.floor(160 / fileBlocks.length)) {
+    for (let fileArea of fileAreas) {
+        if (Math.abs(fileArea.colorBase - base) < Math.floor(160 / fileAreas.length)) {
             return false;
         }
     }
@@ -214,7 +214,7 @@ function checkHeight() {
     let diff = parseInt($('#main-container').css('height')) - parseInt($('#sec-container').css('height'));
     if (diff < 0) {
         $('#main-container').css('height', 'auto');
-    } else if (fileBlocks.length <= 48) {
+    } else if (fileAreas.length <= 48) {
         $('#main-container').css('height', '100%');
         setTimeout(checkHeight, 0);
     }
@@ -233,13 +233,13 @@ function reset() {
     $('#memline').empty();
     $('#empty-body').empty();
     $('#full-body').empty();
-    for (let b of fileBlocks) {
-        if (b.tag !== null) {
-            b.resetTag();
+    for (let b of fileAreas) {
+        if (b.name !== null) {
+            b.resetName();
         }
         b.remove();
     }
-    fileBlocks = [new FileBlock(0, bitN, null, 'lightgrey', false, 720, 0, bitN * 2)];
+    fileAreas = [new FileArea(null, 0, bitN * 2, 'lightgrey', false, 720, 0)];
 
     checkHeight();
 }
@@ -249,31 +249,31 @@ function select(len) {
     let bestId = -1;
     switch (algorithm) {
         case ALGORITHM_FF:
-            for (i = 0; i < fileBlocks.length; i++) {
-                if (fileBlocks[i].tag !== null) {
+            for (i = 0; i < fileAreas.length; i++) {
+                if (fileAreas[i].name !== null) {
                     continue;
                 }
-                if (fileBlocks[i].len >= len) {
+                if (fileAreas[i].len >= len) {
                     return i;
                 }
             }
             return -1;
         case ALGORITHM_BF:
-            for (i in fileBlocks) {
-                if (fileBlocks[i].tag !== null) {
+            for (i in fileAreas) {
+                if (fileAreas[i].name !== null) {
                     continue;
                 }
-                if (fileBlocks[i].len >= len && (bestId === -1 || fileBlocks[i].len < fileBlocks[bestId].len)) {
+                if (fileAreas[i].len >= len && (bestId === -1 || fileAreas[i].len < fileAreas[bestId].len)) {
                     bestId = i;
                 }
             }
             return bestId;
         case ALGORITHM_WF:
-            for (i in fileBlocks) {
-                if (fileBlocks[i].tag !== null) {
+            for (i in fileAreas) {
+                if (fileAreas[i].name !== null) {
                     continue;
                 }
-                if (fileBlocks[i].len >= len && (bestId === -1 || fileBlocks[i].len > fileBlocks[bestId].len)) {
+                if (fileAreas[i].len >= len && (bestId === -1 || fileAreas[i].len > fileAreas[bestId].len)) {
                     bestId = i;
                 }
             }
@@ -282,17 +282,18 @@ function select(len) {
 
 }
 
-function alloc(len, tag, showLen) {
+function alloc(name, showLen) {
+    let len = Math.ceil(showLen / 2);
     let selectedId = select(len);
     if (selectedId === -1) {
         // TODO
         return false;
     }
-    let start = fileBlocks[selectedId].start;
-    fileBlocks[selectedId].start += len;
-    if (!fileBlocks[selectedId].setLen(fileBlocks[selectedId].len - len)) {
-        fileBlocks[selectedId].remove();
-        fileBlocks.splice(selectedId, 1);
+    let start = fileAreas[selectedId].start;
+    fileAreas[selectedId].start += len;
+    if (!fileAreas[selectedId].setLen(fileAreas[selectedId].len - len)) {
+        fileAreas[selectedId].remove();
+        fileAreas.splice(selectedId, 1);
     }
     let colorFg, colorBg, colorStd, colorBase;
     if (colors.length > 0) {
@@ -306,40 +307,40 @@ function alloc(len, tag, showLen) {
         colorBase = ret.base;
         colorStd = false;
     }
-    fileBlocks.splice(selectedId, 0, new FileBlock(start, len, tag, colorFg, colorStd, colorBase, selectedId, showLen));
+    fileAreas.splice(selectedId, 0, new FileArea(name, start, showLen, colorFg, colorStd, colorBase, selectedId));
     return true;
 }
 
 function free(id) {
     let i;
-    for (i = 0; i < fileBlocks.length; i++) {
-        if (fileBlocks[i].id === id) {
+    for (i = 0; i < fileAreas.length; i++) {
+        if (fileAreas[i].id === id) {
             break;
         }
     }
-    let preFree = i > 0 && fileBlocks[i - 1].tag === null;
-    let postFree = i < fileBlocks.length - 1 && fileBlocks[i + 1].tag === null;
-    fileBlocks[i].resetTag(i, preFree || postFree);
+    let preFree = i > 0 && fileAreas[i - 1].name === null;
+    let postFree = i < fileAreas.length - 1 && fileAreas[i + 1].name === null;
+    fileAreas[i].resetName(i, preFree || postFree);
     if (!preFree && !postFree) {
         // TODO
     } else if (!preFree && postFree) {
         setTimeout(function () {
-            fileBlocks[i].setLen(fileBlocks[i].len + fileBlocks[i + 1].len);
-            fileBlocks[i + 1].remove();
-            fileBlocks.splice(i + 1, 1);
+            fileAreas[i].setLen(fileAreas[i].len + fileAreas[i + 1].len);
+            fileAreas[i + 1].remove();
+            fileAreas.splice(i + 1, 1);
         }, delay);
     } else if (preFree && !postFree) {
         setTimeout(function () {
-            fileBlocks[i - 1].setLen(fileBlocks[i - 1].len + fileBlocks[i].len);
-            fileBlocks[i].remove();
-            fileBlocks.splice(i, 1);
+            fileAreas[i - 1].setLen(fileAreas[i - 1].len + fileAreas[i].len);
+            fileAreas[i].remove();
+            fileAreas.splice(i, 1);
         }, delay);
     } else {
         setTimeout(function () {
-            fileBlocks[i - 1].setLen(fileBlocks[i - 1].len + fileBlocks[i].len + fileBlocks[i + 1].len);
-            fileBlocks[i].remove();
-            fileBlocks[i + 1].remove();
-            fileBlocks.splice(i, 2);
+            fileAreas[i - 1].setLen(fileAreas[i - 1].len + fileAreas[i].len + fileAreas[i + 1].len);
+            fileAreas[i].remove();
+            fileAreas[i + 1].remove();
+            fileAreas.splice(i, 2);
         }, delay);
     }
 }
@@ -349,16 +350,16 @@ function onReset() {
 }
 
 function onAlloc() {
-    let tag = $('#add-tag').val();
+    let name = $('#add-name').val();
     let showLen = parseInt($('#add-len').val());
-    if (!tag || !tag.match(/^[A-Za-z0-9_]+$/)) {
+    if (!name || !name.match(/^[A-Za-z0-9_]+$/)) {
         // TODO
         return;
     } else if (isNaN(showLen) || showLen <= 0) {
         // TODO
         return;
     }
-    else if (alloc(Math.ceil(showLen / 2), tag, showLen) === false) {
+    else if (alloc(name, showLen) === false) {
         // TODO
         return;
     }
@@ -366,7 +367,7 @@ function onAlloc() {
 
 function onRandom() {
     let tmp = Math.ceil(Math.random() * 10);
-    if (alloc(Math.ceil(tmp / 2), 'J' + randomId, tmp) === false) {
+    if (alloc('J' + randomId, tmp) === false) {
         // TODO
         return;
     }
@@ -375,16 +376,16 @@ function onRandom() {
 
 function onRandomList() {
     let tmp = Math.ceil(Math.random() * 10);
-    while (alloc(Math.ceil(tmp / 2), randomId + '.txt', tmp)) {
+    while (alloc(randomId + '.txt', tmp)) {
         randomId++;
-        if (fileBlocks.length > 50) {
+        if (fileAreas.length > 50) {
             break;
         }
         tmp = Math.ceil(Math.random() * 10);
     }
 }
 
-function onDelFileBlock(which) {
+function onDelFileArea(which) {
     free(parseInt($(which).parent().parent().attr('id').substring(5)));
 }
 
@@ -395,19 +396,11 @@ function onNext() {
         }
         status++;
         $('#btn-next').html('插入五个')
-        // } else if (status === 1) {
-        //     for (let i in fileBlocks) {
-        //         if (fileBlocks[i].id >= 2 && fileBlocks[i].id % 2 == 1) {
-        //             fileBlocks[i].color = 'grey';
-        //             // fileBlocks[i].show();
-        //             fileBlocks[i].updateItem();
-        //         }
-        //     }
     } else {
-        alloc(4, 'A.txt', 7);
-        alloc(3, 'B.txt', 5);
-        alloc(1, 'C.txt', 2);
-        alloc(5, 'D.txt', 9);
-        alloc(2, 'E.txt', 3.5);
+        alloc('A.txt', 7);
+        alloc('B.txt', 5);
+        alloc('C.txt', 2);
+        alloc('D.txt', 9);
+        alloc('E.txt', 3.5);
     }
 }
