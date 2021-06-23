@@ -260,7 +260,7 @@ function createTimeCharts() {
     }
 }
 
-function reset() {
+function reset(nest) {
     for (let id in processes) {
         processes[id].reset(id);
     }
@@ -271,7 +271,9 @@ function reset() {
         $('#main-container').css('height', 'auto');
     } else if (processes.length <= 12) {
         $('#main-container').css('height', '100%');
-        setTimeout(reset, 0);
+        if (!nest) {
+            setTimeout(reset, 0, true);
+        }
     }
     readyProcessIDs.splice(0, readyProcessIDs.length);
     runningProcessID = -1;

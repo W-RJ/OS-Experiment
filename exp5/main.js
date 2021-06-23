@@ -210,13 +210,15 @@ function setBitN(_bitN) {
     reset();
 }
 
-function checkHeight() {
+function checkHeight(nest) {
     let diff = parseInt($('#main-container').css('height')) - parseInt($('#sec-container').css('height'));
     if (diff < 0) {
         $('#main-container').css('height', 'auto');
     } else if (fileAreas.length <= 48) {
         $('#main-container').css('height', '100%');
-        setTimeout(checkHeight, 0);
+        if (!nest) {
+            setTimeout(checkHeight, 0, true);
+        }
     }
 }
 
