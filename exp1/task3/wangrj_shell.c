@@ -9,12 +9,15 @@
 #define CMD_MAX 128
 #define ARG_MAX 64
 
+// 彩色命令提示符
 #define PROMPT_BASE "WangRJ-Shell> "
 const char PROMPT[] = "\e[1;36m" PROMPT_BASE "\e[0m";
 
+// 输出错误提示
 void printerr(int ptr, int newline)
 {
     char c;
+    // 等待换行符
     if (newline)
     {
         do
@@ -22,18 +25,22 @@ void printerr(int ptr, int newline)
             c = getchar();
         } while (c != '\n');
     }
+    // 缩进
     for (int i = 0; i < ptr; i++)
     {
         fprintf(stderr, " ");
     }
+    // 变成红色，指示位置
     fprintf(stderr, "\e[1;31m^\n");
     for (int i = 5; i < ptr; i++)
     {
         fprintf(stderr, " ");
     }
+    // 输出提示
     fputs("错误：非法命令\e[0m\n\n", stderr);
 }
 
+// 获得有效字符
 char getValidChar(int *ptr)
 {
     char c;
@@ -54,10 +61,14 @@ int main()
     int argc = 1;
     int pid;
     int success;
+
+    // 输出命令提示符
     printf(PROMPT);
     while (1)
     {
         argv[0] = NULL;
+
+        // 输入命令名
         c = getValidChar(&ptr);
         if (c != '\n')
         {
@@ -94,6 +105,7 @@ int main()
 
         if (argv[0] != NULL)
         {
+            // 词法分析，解析参数
             c = getValidChar(&ptr);
             if (c != '(')
             {
@@ -104,6 +116,7 @@ int main()
                 success = 1;
                 while (1)
                 {
+                    // 解析参数
                     argv[argc] = (char*) malloc(64);
                     argv[argc][0] = '\0';
                     c = getValidChar(&ptr);
@@ -132,6 +145,7 @@ int main()
                 }
                 if (success)
                 {
+                    // 解析成功，执行命令
                     pid = fork();
                     if (pid == -1)
                     {
@@ -144,18 +158,20 @@ int main()
                     else
                     {
                         execve(argv[0], argv, NULL);
-                        exit(0);
                     }
                 }
             }
         }
 
+        // 释放空间
         while (argc > 1)
         {
             argc--;
             free(argv[argc]);
             argv[argc] = NULL;
         }
+
+        // 输出命令提示符
         printf(PROMPT);
         ptr = (sizeof(PROMPT_BASE)) / sizeof(char) - 2;
     }
