@@ -13,6 +13,8 @@ let nextId = 1;
 
 let delay = 1200;
 
+let highlightDelay = 500;
+
 let randomId = 1;
 
 let colors = [
@@ -27,39 +29,46 @@ let colors = [
     { fg: 'hsl(300,100%,50%)', base: 300 },
 ];
 
-class Block {
+class Partition {
+    // 构造函数
     constructor(start, len, tag, color, colorStd, colorBase, i) {
-        this.id = nextId++;
-        this.start = start;
-        this.len = len;
-        this.tag = tag;
-        this.color = color;
-        this.colorStd = colorStd;
-        this.colorBase = colorBase;
+        this.id = nextId++; // ID
+        this.start = start; // 起始地址
+        this.len = len; // 长度
+        this.tag = tag; // 标签
 
+        this.color = color; // 颜色
+        this.colorStd = colorStd; // 是否为标准色
+        this.colorBase = colorBase; // 色相
+
+        // 修改位示图和内存映像图
         i--;
         if (i === -1) {
             $('#memline').prepend('<div id="memline-' + this.id + '" style="background:lightgrey"></div>');
         } else {
             $('#memline').children().eq(i).after('<div id="memline-' + this.id + '" style="background:lightgrey"></div>');
         }
-        if (blocks.length === 0) {
-            this.show();
+        if (partitions.length === 0) {
+            this.showMap();
         } else {
             let tmp = this;
             setTimeout(function () {
-                tmp.show();
+                tmp.showMap();
             }, 0);
         }
 
+        // 在已分区表或空闲分区表中插入表项
         this.showItem(i);
 
         checkHeight();
     }
 
-    show() {
+    // 在位示图和内存映像图中显示本分区
+    showMap() {
+        // 在内存映像图中显示本分区
         $('#memline-' + this.id).css('flex-grow', this.len);
         $('#memline-' + this.id).css('background', this.color);
+        // 在位示图中显示本分区
         let bit = $('#bitmap-body').children().eq(this.start);
         for (let i = 0; i < this.len; i++) {
             bit.css('background-color', this.color);
@@ -67,13 +76,16 @@ class Block {
         }
     }
 
+    // 在已分区表或空闲分区表中插入表项
     showItem(i) {
         let cnt = -1;
         for (let j = 0; j <= i; j++) {
-            if (!((this.tag === null) ^ (blocks[j].tag === null))) {
+            if (!((this.tag === null) ^ (partitions[j].tag === null))) {
                 cnt++;
             }
         }
+
+        // 插入表项
         if (this.tag === null) {
             let tmp = '<tr id="item-' + this.id + '">' +
                 '<td class="item-start">' + this.start + '</td>' +
@@ -90,7 +102,7 @@ class Block {
                 '<td class="item-len">' + this.len + '</td>' +
                 '<td>' + this.tag + '</td>' +
                 '<td style="padding: 2px;">' +
-                '<button type="button" class="btn-close" aria-label="Close" onclick="onDelBlock(this)"></button>' +
+                '<button type="button" class="btn-close" aria-label="Close" onclick="onDelPartition(this)"></button>' +
                 '</td>' +
                 '</tr>';
             if (cnt === -1) {
@@ -99,27 +111,35 @@ class Block {
                 $('#full-body').children().eq(cnt).after(tmp);
             }
         }
+
+        // 加大加粗指示
         let item = $('#item-' + this.id);
         item.children().css('font-weight', '900');
         item.children().css('font-size', 'x-large');
         setTimeout(function () {
             item.children().css('font-weight', 'normal');
             item.children().css('font-size', 'normal');
-        }, 500);
+        }, highlightDelay);
     }
 
+    // 修改已分区表或空闲分区表中的表项
     updateItem() {
         let item = $('#item-' + this.id);
+
+        // 修改信息
         item.children('.item-start').html(this.start);
         item.children('.item-len').html(this.len);
+
+        // 加大加粗指示
         item.children().css('font-weight', '900');
         item.children().css('font-size', 'x-large');
         setTimeout(function () {
             item.children().css('font-weight', 'normal');
             item.children().css('font-size', 'normal');
-        }, 500);
+        }, highlightDelay);
     }
 
+    // 在图表中移除本分区
     remove() {
         $('#memline-' + this.id).remove();
         $('#item-' + this.id).remove();
@@ -127,44 +147,48 @@ class Block {
         checkHeight();
     }
 
+    // 将本分区设为空闲
     resetTag(i, chColor) {
         this.tag = null;
+
+        // 回收标准色
         if (this.colorStd) {
             colors.push({ fg: this.color, base: this.colorBase });
         }
-        if (chColor) {
+
+        // 设置颜色
+        if (chColor) { // 有合并分区效果
             this.color = 'darkgrey';
-        } else {
+        } else { // 无合并分区效果
             this.color = 'lightgrey';
         }
         this.colorStd = false;
         this.colorBase = 720;
 
-        // $('#memline-' + this.id).css('flex', '0');
         $('#memline-' + this.id).css('background-color', this.color);
-        // setTimeout("$('#memline-" + this.id + "').remove();", delay);
-        this.show();
+        this.showMap();
 
+        // 更新已分区表和空闲分区表
         $('#item-' + this.id).remove();
-
         this.showItem(i - 1);
     }
 
+    // 设置分区长度
     setLen(len) {
         this.len = len;
         this.color = 'lightgrey';
         this.updateItem();
         if (this.len === 0) {
-            // this.finalize();
             return false;
         } else {
-            this.show();
+            // 更新位示图和内存映像图
+            this.showMap();
             return true;
         }
     }
 }
 
-let blocks = [];
+let partitions = [];
 
 $(document).ready(function () {
     let bitmapHead = $('#bitmap-head');
@@ -176,8 +200,8 @@ $(document).ready(function () {
 });
 
 function checkColor(base) {
-    for (let block of blocks) {
-        if (Math.abs(block.colorBase - base) < Math.floor(160 / blocks.length)) {
+    for (let partition of partitions) {
+        if (Math.abs(partition.colorBase - base) < Math.floor(160 / partitions.length)) {
             return false;
         }
     }
@@ -229,53 +253,58 @@ function reset() {
     $('#memline').empty();
     $('#empty-body').empty();
     $('#full-body').empty();
-    for (let b of blocks) {
+    for (let b of partitions) {
         if (b.tag !== null) {
             b.resetTag();
         }
         b.remove();
     }
-    blocks = [new Block(0, bitN, null, 'lightgrey', false, 720, 0)];
+    partitions = [new Partition(0, bitN, null, 'lightgrey', false, 720, 0)];
 
     checkHeight();
 }
 
+// 根据算法选择空闲分区，返回分区编号
 function select(len) {
     let i;
     let bestId = -1;
     switch (algorithm) {
+        // 首次适应算法
         case ALGORITHM_FF:
-            for (i = 0; i < blocks.length; i++) {
-                if (blocks[i].tag !== null) {
+            for (i = 0; i < partitions.length; i++) {
+                if (partitions[i].tag !== null) {
                     continue;
                 }
-                if (blocks[i].len >= len) {
+                if (partitions[i].len >= len) {
                     return i;
                 }
             }
             return -1;
+
+        // 最佳适应算法
         case ALGORITHM_BF:
-            for (i in blocks) {
-                if (blocks[i].tag !== null) {
+            for (i in partitions) {
+                if (partitions[i].tag !== null) {
                     continue;
                 }
-                if (blocks[i].len >= len && (bestId === -1 || blocks[i].len < blocks[bestId].len)) {
+                if (partitions[i].len >= len && (bestId === -1 || partitions[i].len < partitions[bestId].len)) {
                     bestId = i;
                 }
             }
             return bestId;
+
+        // 最坏适应算法
         case ALGORITHM_WF:
-            for (i in blocks) {
-                if (blocks[i].tag !== null) {
+            for (i in partitions) {
+                if (partitions[i].tag !== null) {
                     continue;
                 }
-                if (blocks[i].len >= len && (bestId === -1 || blocks[i].len > blocks[bestId].len)) {
+                if (partitions[i].len >= len && (bestId === -1 || partitions[i].len > partitions[bestId].len)) {
                     bestId = i;
                 }
             }
             return bestId;
     }
-
 }
 
 function alloc(len, tag) {
@@ -284,11 +313,11 @@ function alloc(len, tag) {
         // TODO
         return false;
     }
-    let start = blocks[selectedId].start;
-    blocks[selectedId].start += len;
-    if (!blocks[selectedId].setLen(blocks[selectedId].len - len)) {
-        blocks[selectedId].remove();
-        blocks.splice(selectedId, 1);
+    let start = partitions[selectedId].start;
+    partitions[selectedId].start += len;
+    if (!partitions[selectedId].setLen(partitions[selectedId].len - len)) {
+        partitions[selectedId].remove();
+        partitions.splice(selectedId, 1);
     }
     let colorFg, colorBg, colorStd, colorBase;
     if (colors.length > 0) {
@@ -302,40 +331,41 @@ function alloc(len, tag) {
         colorBase = ret.base;
         colorStd = false;
     }
-    blocks.splice(selectedId, 0, new Block(start, len, tag, colorFg, colorStd, colorBase, selectedId));
+    partitions.splice(selectedId, 0, new Partition(start, len, tag, colorFg, colorStd, colorBase, selectedId));
     return true;
 }
 
+// 释放指定ID对应的分区
 function free(id) {
     let i;
-    for (i = 0; i < blocks.length; i++) {
-        if (blocks[i].id === id) {
+    for (i = 0; i < partitions.length; i++) {
+        if (partitions[i].id === id) {
             break;
         }
     }
-    let preFree = i > 0 && blocks[i - 1].tag === null;
-    let postFree = i < blocks.length - 1 && blocks[i + 1].tag === null;
-    blocks[i].resetTag(i, preFree || postFree);
-    if (!preFree && !postFree) {
-        // TODO
-    } else if (!preFree && postFree) {
+    // 前面空闲
+    let preFree = i > 0 && partitions[i - 1].tag === null;
+    // 后面空闲
+    let postFree = i < partitions.length - 1 && partitions[i + 1].tag === null;
+    partitions[i].resetTag(i, preFree || postFree);
+    if (!preFree && postFree) { // 与后面合并
         setTimeout(function () {
-            blocks[i].setLen(blocks[i].len + blocks[i + 1].len);
-            blocks[i + 1].remove();
-            blocks.splice(i + 1, 1);
+            partitions[i].setLen(partitions[i].len + partitions[i + 1].len);
+            partitions[i + 1].remove();
+            partitions.splice(i + 1, 1);
         }, delay);
-    } else if (preFree && !postFree) {
+    } else if (preFree && !postFree) { // 与前面合并
         setTimeout(function () {
-            blocks[i - 1].setLen(blocks[i - 1].len + blocks[i].len);
-            blocks[i].remove();
-            blocks.splice(i, 1);
+            partitions[i - 1].setLen(partitions[i - 1].len + partitions[i].len);
+            partitions[i].remove();
+            partitions.splice(i, 1);
         }, delay);
-    } else {
+    } else if (preFree && postFree) { // 与前后合并
         setTimeout(function () {
-            blocks[i - 1].setLen(blocks[i - 1].len + blocks[i].len + blocks[i + 1].len);
-            blocks[i].remove();
-            blocks[i + 1].remove();
-            blocks.splice(i, 2);
+            partitions[i - 1].setLen(partitions[i - 1].len + partitions[i].len + partitions[i + 1].len);
+            partitions[i].remove();
+            partitions[i + 1].remove();
+            partitions.splice(i, 2);
         }, delay);
     }
 }
@@ -371,13 +401,13 @@ function onRandom() {
 function onRandomList() {
     while (alloc(Math.ceil(Math.random() * 80), 'J' + randomId)) {
         randomId++;
-        if (blocks.length >= 9) {
+        if (partitions.length >= 9) {
             break;
         }
     }
 }
 
-function onDelBlock(which) {
+function onDelPartition(which) {
     free(parseInt($(which).parent().parent().attr('id').substring(5)));
 }
 

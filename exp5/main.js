@@ -17,6 +17,8 @@ let status = 0;
 
 let delay = 1200;
 
+let highlightDelay = 500;
+
 let colors = [
     { fg: 'hsl(330,100%,60%)', base: 330 },
     { fg: 'hsl(30,100%,50%)', base: 30 },
@@ -30,16 +32,19 @@ let colors = [
 ];
 
 class FileArea {
-    constructor(name, start, showLen, color, colorStd, colorBase, i) {
-        this.id = nextId++;
-        this.start = start;
-        this.len = Math.ceil(showLen / 2);
-        this.showLen = showLen;
-        this.name = name;
-        this.color = color;
-        this.colorStd = colorStd;
-        this.colorBase = colorBase;
+    // 构造函数
+    constructor(name, start, size, color, colorStd, colorBase, i) {
+        this.id = nextId++; // ID
+        this.name = name; // 文件名
+        this.start = start; // 起始块
+        this.len = Math.ceil(size / 2); // 占用块数
+        this.size = size; // 大小
 
+        this.color = color; // 颜色
+        this.colorStd = colorStd; // 是否为标准色
+        this.colorBase = colorBase; // 色相
+
+        // 修改位示图和映像图
         i--;
         if (i === -1) {
             $('#memline').prepend('<div id="memline-' + this.id + '" style="background:lightgrey"></div>');
@@ -55,14 +60,18 @@ class FileArea {
             }, 0);
         }
 
+        // 插入表项
         this.showItem(i);
 
         checkHeight();
     }
 
+    // 在位示图和映像图中显示本盘区
     show() {
+        // 在映像图中显示本盘区
         $('#memline-' + this.id).css('flex-grow', this.len);
         $('#memline-' + this.id).css('background', this.color);
+        // 在位示图中显示本盘区
         let bit = $('#bitmap-body').children().eq(this.start);
         for (let i = 0; i < this.len; i++) {
             bit.css('background-color', this.color);
@@ -70,6 +79,7 @@ class FileArea {
         }
     }
 
+    // 插入表项
     showItem(i) {
         let cnt = -1;
         for (let j = 0; j <= i; j++) {
@@ -77,10 +87,12 @@ class FileArea {
                 cnt++;
             }
         }
+
+        // 插入表项
         if (this.name === null) {
             let tmp = '<tr id="item-' + this.id + '">' +
                 '<td class="item-start">' + this.start * 2 + 'K</td>' +
-                '<td class="item-len">' + this.showLen + 'K</td>' +
+                '<td class="item-len">' + this.size + 'K</td>' +
                 '</tr>';
             if (cnt === -1) {
                 $('#empty-body').prepend(tmp);
@@ -90,7 +102,7 @@ class FileArea {
         } else {
             let tmp = '<tr id="item-' + this.id + '" style="background:' + this.color + '">' +
                 '<td class="item-start">' + this.start * 2 + 'K</td>' +
-                '<td class="item-len">' + this.showLen + 'K</td>' +
+                '<td class="item-len">' + this.size + 'K</td>' +
                 '<td>' + this.name + '</td>' +
                 '<td style="padding: 2px;">' +
                 '<button type="button" class="btn-close" aria-label="Close" onclick="onDelFileArea(this)"></button>' +
@@ -102,27 +114,35 @@ class FileArea {
                 $('#full-body').children().eq(cnt).after(tmp);
             }
         }
+
+        // 加大加粗指示
         let item = $('#item-' + this.id);
         item.children().css('font-weight', '900');
         item.children().css('font-size', 'x-large');
         setTimeout(function () {
             item.children().css('font-weight', 'normal');
             item.children().css('font-size', 'normal');
-        }, 500);
+        }, highlightDelay);
     }
 
+    // 更新表项
     updateItem() {
         let item = $('#item-' + this.id);
+
+        // 修改信息
         item.children('.item-start').html(this.start * 2 + 'K');
-        item.children('.item-len').html(this.showLen + 'K');
+        item.children('.item-len').html(this.size + 'K');
+
+        // 加大加粗指示
         item.children().css('font-weight', '900');
         item.children().css('font-size', 'x-large');
         setTimeout(function () {
             item.children().css('font-weight', 'normal');
             item.children().css('font-size', 'normal');
-        }, 500);
+        }, highlightDelay);
     }
 
+    // 在图表中移除本盘区
     remove() {
         $('#memline-' + this.id).remove();
         $('#item-' + this.id).remove();
@@ -130,39 +150,43 @@ class FileArea {
         checkHeight();
     }
 
+    // 将本盘区设为空闲
     resetName(i, chColor) {
         this.name = null;
-        this.showLen = this.len * 2;
+
+        // 回收标准色
+        this.size = this.len * 2;
         if (this.colorStd) {
             colors.push({ fg: this.color, base: this.colorBase });
         }
-        if (chColor) {
+
+        // 设置颜色
+        if (chColor) { // 有合并盘区效果
             this.color = 'darkgrey';
-        } else {
+        } else { // 无合并盘区效果
             this.color = 'lightgrey';
         }
         this.colorStd = false;
         this.colorBase = 720;
 
-        // $('#memline-' + this.id).css('flex', '0');
         $('#memline-' + this.id).css('background-color', this.color);
-        // setTimeout("$('#memline-" + this.id + "').remove();", delay);
         this.show();
 
+        // 更新表项
         $('#item-' + this.id).remove();
-
         this.showItem(i - 1);
     }
 
+    // 设置盘区长度
     setLen(len) {
         this.len = len;
-        this.showLen = len * 2;
+        this.size = len * 2;
         this.color = 'lightgrey';
         this.updateItem();
         if (this.len === 0) {
-            // this.finalize();
             return false;
         } else {
+            // 更新位示图和映像图
             this.show();
             return true;
         }
@@ -284,8 +308,8 @@ function select(len) {
 
 }
 
-function alloc(name, showLen) {
-    let len = Math.ceil(showLen / 2);
+function alloc(name, size) {
+    let len = Math.ceil(size / 2);
     let selectedId = select(len);
     if (selectedId === -1) {
         // TODO
@@ -309,10 +333,11 @@ function alloc(name, showLen) {
         colorBase = ret.base;
         colorStd = false;
     }
-    fileAreas.splice(selectedId, 0, new FileArea(name, start, showLen, colorFg, colorStd, colorBase, selectedId));
+    fileAreas.splice(selectedId, 0, new FileArea(name, start, size, colorFg, colorStd, colorBase, selectedId));
     return true;
 }
 
+// 删除指定ID对应的文件，释放盘区
 function free(id) {
     let i;
     for (i = 0; i < fileAreas.length; i++) {
@@ -320,24 +345,24 @@ function free(id) {
             break;
         }
     }
+    // 前面空闲
     let preFree = i > 0 && fileAreas[i - 1].name === null;
+    // 后面空闲
     let postFree = i < fileAreas.length - 1 && fileAreas[i + 1].name === null;
     fileAreas[i].resetName(i, preFree || postFree);
-    if (!preFree && !postFree) {
-        // TODO
-    } else if (!preFree && postFree) {
+    if (!preFree && postFree) { // 与后面合并
         setTimeout(function () {
             fileAreas[i].setLen(fileAreas[i].len + fileAreas[i + 1].len);
             fileAreas[i + 1].remove();
             fileAreas.splice(i + 1, 1);
         }, delay);
-    } else if (preFree && !postFree) {
+    } else if (preFree && !postFree) { // 与前面合并
         setTimeout(function () {
             fileAreas[i - 1].setLen(fileAreas[i - 1].len + fileAreas[i].len);
             fileAreas[i].remove();
             fileAreas.splice(i, 1);
         }, delay);
-    } else {
+    } else if (preFree && postFree) { // 与前后合并
         setTimeout(function () {
             fileAreas[i - 1].setLen(fileAreas[i - 1].len + fileAreas[i].len + fileAreas[i + 1].len);
             fileAreas[i].remove();
@@ -353,15 +378,15 @@ function onReset() {
 
 function onAlloc() {
     let name = $('#add-name').val();
-    let showLen = parseInt($('#add-len').val());
+    let size = parseInt($('#add-len').val());
     if (!name || !name.match(/^[A-Za-z0-9_]+$/)) {
         // TODO
         return;
-    } else if (isNaN(showLen) || showLen <= 0) {
+    } else if (isNaN(size) || size <= 0) {
         // TODO
         return;
     }
-    else if (alloc(name, showLen) === false) {
+    else if (alloc(name, size) === false) {
         // TODO
         return;
     }

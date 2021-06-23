@@ -57,101 +57,130 @@ let delay = 500;
 let preDelay = -1;
 
 class Process {
+    // 构造函数
     constructor(name, colorFg, colorBg, colorStd, colorBase, arrivalTime, requiredTime) {
-        this.name = name;
-        this.colorFg = colorFg;
-        this.colorBg = colorBg;
-        this.colorStd = colorStd;
-        this.colorBase = colorBase;
+        this.name = name; // 进程名
 
-        this.arrivalTime = arrivalTime;
-        this.requiredTime = requiredTime;
-        this.servedTime = 0;
-        this.completionTime = 0;
+        this.colorFg = colorFg; // 前景色
+        this.colorBg = colorBg; // 背景色
+        this.colorStd = colorStd; // 是否为标准色
+        this.colorBase = colorBase; // 色相
 
-        this.status = STATUS_NOT_ARRIVED;
+        this.arrivalTime = arrivalTime; // 到达时间
+        this.requiredTime = requiredTime; // 需要服务时间
+        this.servedTime = 0; // 已服务时间
+        this.completionTime = 0; // 完成时间
+
+        this.status = STATUS_NOT_ARRIVED; // 进程状态
         this.queueID = -1;
     }
 
+    // 析构函数
     finalize() {
         if (this.colorStd) {
             colors.push({ fg: this.colorFg, bg: this.colorBg, base: this.colorBase });
         }
     }
 
+    // 计算响应比
     getResponse() {
         return (this.requiredTime - this.servedTime + curTime - this.arrivalTime) / this.requiredTime;
     }
 
+    // 复位
     reset(pid) {
         let infotr = $('#infotable-' + this.name);
         let statuschartitem = $('#statuschart-' + this.name);
+        // 复位数据
         this.servedTime = 0;
         this.completionTime = 0;
         this.status = STATUS_NOT_ARRIVED;
+        // 复位进度条
         infotr.css('border-color', '#00000000');
         infotr.css('background-position', '100%');
+        // 复位表中数据
         infotr.children('.infotable-servedtime').html(0);
         infotr.children('.infotable-completiontime').html('');
         infotr.children('.infotable-totaltime').html('');
         infotr.children('.infotable-weightedtime').html('');
         infotr.children('.infotable-status').html('未到达');
+        // 更新状态图进程位置
         statuschartitem.css('left', POS_NOT_ARRIVED_L + pid * POS_NOT_ARRIVED_DL);
         statuschartitem.css('top', POS_NOT_ARRIVED_T + pid * POS_NOT_ARRIVED_DT);
-        // TODO
     }
 
+    // 单步执行，更新信息
     forward(pid) {
         let infotr = $('#infotable-' + this.name);
         let timecharttr = $('#timechart-' + this.name);
         let statuschartitem = $('#statuschart-' + this.name);
         switch (this.status) {
+            // 未到达
             case STATUS_NOT_ARRIVED:
                 infotr.css('border-color', '#00000000');
+                // 更新表中数据
                 infotr.children('.infotable-status').html('未到达');
+                // 更新时间图
                 timecharttr.children().eq(curTime).css('background-color', '#00000000');
-                // TODO
                 break;
+
+            // 就绪
             case STATUS_READY:
                 infotr.css('border-color', 'yellow');
+                // 更新表中数据
                 infotr.children('.infotable-status').html('就绪');
+                // 更新时间图
                 timecharttr.children().eq(curTime).css('background-color', 'gainsboro');
+                // 更新状态图进程位置
                 statuschartitem.css('left', POS_READY_L + this.queueID * POS_READY_DL);
                 statuschartitem.css('top', POS_READY_T + this.queueID * POS_READY_DT);
-                // TODO
                 break;
+
+            // 执行
             case STATUS_RUNNING:
                 this.servedTime++;
                 infotr.css('border-color', 'lightgreen');
+                // 更新表中数据
                 infotr.css('background-position', 100 - (100 * this.servedTime / this.requiredTime) + '%');
                 infotr.children('.infotable-servedtime').html(this.servedTime);
                 infotr.children('.infotable-status').html('执行');
+                // 更新时间线
                 $('#timeline-tr').children().eq(curTime).css('background-color', this.colorFg);
+                // 更新时间图
                 timecharttr.children().eq(curTime).css('background-color', this.colorFg);
+                // 更新状态图进程位置
                 statuschartitem.css('left', POS_RUNNING_L);
                 statuschartitem.css('top', POS_RUNNING_T);
-                // TODO
                 break;
+
+            // 终止
             case STATUS_COMPLETED:
+                // 如果刚终止
                 if (this.completionTime === 0) {
+                    // 计算并更新表中最终数据
                     this.completionTime = curTime;
                     infotr.children('.infotable-completiontime').html(this.completionTime);
                     infotr.children('.infotable-totaltime').html(this.completionTime - this.arrivalTime);
                     infotr.children('.infotable-weightedtime').html(((this.completionTime - this.arrivalTime) / this.requiredTime).toFixed(2));
                 }
                 infotr.css('border-color', '#00000000');
+                // 更新表中数据
                 infotr.children('.infotable-status').html('终止');
+                // 更新时间图
                 timecharttr.children().eq(curTime).css('background-color', '#00000000');
+                // 更新状态图进程位置
                 statuschartitem.css('left', POS_COMPLETED_L + pid * POS_COMPLETED_DL);
                 statuschartitem.css('top', POS_COMPLETED_T + pid * POS_COMPLETED_DT);
-                // TODO
                 break;
         }
     }
 
+    // 更新执行完成的进程的信息
     forwardComplete() {
+        // 如果刚终止
         if (this.status === STATUS_RUNNING && this.servedTime === this.requiredTime) {
             let infotr = $('#infotable-' + this.name);
+            // 计算并更新表中最终数据
             this.completionTime = curTime;
             infotr.children('.infotable-completiontime').html(this.completionTime);
             infotr.children('.infotable-totaltime').html(this.completionTime - this.arrivalTime);
@@ -161,37 +190,49 @@ class Process {
         return false;
     }
 
+    // 单步后退，更新进度
     backwardServedTime() {
+        // 如果是执行态，需要回退进度
         if (this.status === STATUS_RUNNING) {
             let infotr = $('#infotable-' + this.name);
             if (this.completionTime !== 0) {
+                // 删除表中最终数据
                 this.completionTime = 0;
                 infotr.children('.infotable-completiontime').html('');
                 infotr.children('.infotable-totaltime').html('');
                 infotr.children('.infotable-weightedtime').html('');
             }
+            // 回退已服务时间
             this.servedTime--;
             infotr.css('background-position', 100 - (100 * this.servedTime / this.requiredTime) + '%');
         }
     }
 
+    // 单步后退，更新信息
     backward() {
         let infotr = $('#infotable-' + this.name);
         let statuschartitem = $('#statuschart-' + this.name);
         switch (this.status) {
+            // 未到达
             case STATUS_NOT_ARRIVED:
                 infotr.css('border-color', '#00000000');
                 infotr.children('.infotable-status').html('未到达');
                 break;
+
+            // 就绪
             case STATUS_READY:
                 infotr.css('border-color', 'yellow');
                 infotr.children('.infotable-status').html('就绪');
                 break;
+
+            // 执行
             case STATUS_RUNNING:
                 infotr.css('border-color', 'lightgreen');
                 infotr.children('.infotable-servedtime').html(this.servedTime);
                 infotr.children('.infotable-status').html('执行');
                 break;
+
+            // 终止
             case STATUS_COMPLETED:
                 break;
         }
@@ -282,10 +323,13 @@ function reset(nest) {
     doPause();
 }
 
+// 将作业插入到就绪队列的合适位置
 function ready(id) {
+    // 如果是SJF算法
     if (algorithm === ALGORITHM_SJF) {
         let i = 0;
         let n = readyProcessIDs.length;
+        // 寻找插入位置
         for (i = 0; i < n; i++) {
             if (processes[readyProcessIDs[i]].requiredTime > processes[id].requiredTime) {
                 break;
@@ -293,11 +337,13 @@ function ready(id) {
         }
         readyProcessIDs.splice(i, 0, id);
     } else {
+        // 直接插入到队尾
         readyProcessIDs.push(id);
     }
     processes[id].status = STATUS_READY;
 }
 
+// 单步执行，调度进程
 function forward() {
     running = true;
 
@@ -308,31 +354,38 @@ function forward() {
 
     $('timeline-tr').children().eq(curTime).css('background-color', '#00000000');
 
+    // 将刚到达的进程插入就绪队列
     for (let i in processes) {
         if (processes[i].arrivalTime === curTime) {
             ready(i);
         }
     }
 
+    // 如果上一时刻执行的进程执行完成，将进程移出处理器
     if (runningProcessID >= 0 && processes[runningProcessID].servedTime === processes[runningProcessID].requiredTime) {
         processes[runningProcessID].status = STATUS_COMPLETED;
         runningProcessID = -1;
         rrCur = 0;
     }
 
+    // 如果RR算法的时间片到，将进程移出处理器
     if (rrCur >= rrQ) {
         ready(runningProcessID);
         runningProcessID = -1;
         rrCur = 0;
     }
 
+    // 如果当前处理器空闲并且就绪队列非空，则需要调度
     if (runningProcessID === -1 && readyProcessIDs.length > 0) {
         switch (algorithm) {
+            // FCFS、SJF、RR算法直接调度队头进程
             case ALGORITHM_FCFS:
             case ALGORITHM_SJF:
             case ALGORITHM_RR:
                 runningProcessID = readyProcessIDs.shift();
                 break;
+
+            // HRN算法需计算各个进程的响应比，选择响应比最大的进程
             case ALGORITHM_HRN:
                 let readyID = 0;
                 for (let i in readyProcessIDs) {
@@ -352,16 +405,17 @@ function forward() {
         rrCur++;
     }
 
+    // 更新各个进程的信息
     for (let i in readyProcessIDs) {
         processes[readyProcessIDs[i]].queueID = i;
     }
-
     for (let id in processes) {
         processes[id].forward(id);
     }
 
     curTime++;
 
+    // 更新时间线和时间图
     $('#timeline-limiter').css('width', 100 * curTime / finalTime + '%');
     $('#timechart-limiter').css('width', 100 * curTime / finalTime + '%');
 

@@ -74,19 +74,25 @@ $(document).ready(function () {
     });
 });
 
-class Pos {
+class DiskRequest {
+    // 构造函数
     constructor(pos) {
-        this.pos = pos;
-        this.order = -1;
-        this.id = nextId++;
+        this.pos = pos; // 请求位置
+        this.order = -1; // 服务顺序
+        this.id = nextId++; // ID
+
+        // 插入表格
         $('#info-pos').append('<td></td>');
         $('#info-order').append('<td></td>');
         // $('#info-op').append('<td style="padding: 12px;">' +
         //     '<button type="button" class="btn-close" aria-label="Close"></button>' +
         //     '</td>');
+
+        // 插入磁盘图
         $('#disk').append('<div id="disk-' + this.id + '"></div>')
     }
 
+    // 析构函数
     finalize() {
         $('#info-pos').children().last().remove();
         $('#info-order').children().last().remove();
@@ -94,7 +100,9 @@ class Pos {
         $('#disk-' + this.id).remove();
     }
 
+    // 显示请求
     show(i) {
+        // 显示请求信息
         $('#info-pos').children('td').eq(i).html(this.pos);
         if (this.order >= 0) {
             $('#info-order').children('td').eq(i).html(this.order);
@@ -104,6 +112,8 @@ class Pos {
         // $('#info-op').children('td').eq(i).children().on('click', function() {
         //     onDel(i);
         // });
+
+        // 在磁盘图中显示请求
         $('#disk-' + this.id).css('left', 100 * this.pos / maxPos + '%');
         if (this.order >= 0) {
             $('#disk-' + this.id).css('border-color', 'green');
@@ -112,74 +122,82 @@ class Pos {
         }
     }
 
+    // 重置
     reset(i) {
         curOrder = 1;
         this.order = -1;
         this.show(i);
-        chart.data.datasets[0].data = [{ x: curPos, y: 0 }];
-        chart.update();
     }
 }
 
-let poses = [];
+let diskRequests = [];
 
 function show() {
-    for (let i in poses) {
-        poses[i].show(i);
+    for (let i in diskRequests) {
+        diskRequests[i].show(i);
     }
 }
 
 function add(pos) {
-    poses.push(new Pos(pos));
+    diskRequests.push(new DiskRequest(pos));
     reset();
-    // chart.options.scales.yAxes[0].ticks.max = poses.length;
+    // chart.options.scales.yAxes[0].ticks.max = diskRequests.length;
     // chart.update();
     return true;
 }
 
 function del(i) {
-    poses[i].finalize();
-    poses.splice(i, 1);
+    diskRequests[i].finalize();
+    diskRequests.splice(i, 1);
     reset();
 }
 
 function reset() {
-    poses.sort(function (a, b) {
+    diskRequests.sort(function (a, b) {
         return a.pos - b.pos;
     });
-    for (let i in poses) {
-        poses[i].reset(i);
+    for (let i in diskRequests) {
+        diskRequests[i].reset(i);
     }
+    chart.data.datasets[0].data = [{ x: curPos, y: 0 }];
+    chart.update();
 }
 
+// 根据算法选择下一个服务的请求的编号
 function select() {
     let res = -1;
     if (algorithm === ALGORITHM_SSTF) {
-        for (let i in poses) {
-            if (poses[i].order >= 0) {
+        // SSTF算法
+        for (let i in diskRequests) {
+            if (diskRequests[i].order >= 0) {
                 continue;
             }
-            if (res === -1 || Math.abs(poses[res].pos - curPos) > Math.abs(poses[i].pos - curPos)) {
+            if (res === -1 || Math.abs(diskRequests[res].pos - curPos) > Math.abs(diskRequests[i].pos - curPos)) {
                 res = i;
             }
         }
         return res;
     } else {
-        for (let i in poses) {
-            if (poses[i].order >= 0 || poses[i].pos * curDir < curPos * curDir) {
+        // SCAN算法
+        // 首先寻找当前方向的最近的请求
+        for (let i in diskRequests) {
+            if (diskRequests[i].order >= 0 || diskRequests[i].pos * curDir < curPos * curDir) {
                 continue;
             }
-            if (res === -1 || Math.abs(poses[res].pos - curPos) > Math.abs(poses[i].pos - curPos)) {
+            if (res === -1 || Math.abs(diskRequests[res].pos - curPos) > Math.abs(diskRequests[i].pos - curPos)) {
                 res = i;
             }
         }
+        // 若没有
         if (res === -1) {
+            // 改变方向
             curDir = -curDir;
-            for (let i in poses) {
-                if (poses[i].order >= 0 || poses[i].pos * curDir < curPos * curDir) {
+            // 寻找新方向的最近的请求
+            for (let i in diskRequests) {
+                if (diskRequests[i].order >= 0 || diskRequests[i].pos * curDir < curPos * curDir) {
                     continue;
                 }
-                if (res === -1 || Math.abs(poses[res].pos - curPos) > Math.abs(poses[i].pos - curPos)) {
+                if (res === -1 || Math.abs(diskRequests[res].pos - curPos) > Math.abs(diskRequests[i].pos - curPos)) {
                     res = i;
                 }
             }
@@ -193,14 +211,14 @@ function forward() {
 
     let selectedI = select();
     if (selectedI < 0) {
-        // TODO
+        return false;
     } else {
-        poses[selectedI].order = curOrder;
-        ans += Math.abs(poses[selectedI].pos - curPos);
-        curPos = poses[selectedI].pos;
+        diskRequests[selectedI].order = curOrder;
+        ans += Math.abs(diskRequests[selectedI].pos - curPos);
+        curPos = diskRequests[selectedI].pos;
         $('#limiter').css('width', 100 * curPos / maxPos + '%');
         setTimeout(function () {
-            $('#disk-' + poses[selectedI].id).css('border-color', 'green');
+            $('#disk-' + diskRequests[selectedI].id).css('border-color', 'green');
         }, delay);
         show();
         chart.data.datasets[0].data.push({ x: curPos, y: curOrder });
@@ -209,10 +227,11 @@ function forward() {
     }
 
     setTimeout('onTimer()', delay);
+    return true;
 }
 
 function onTimer() {
-    if (continuous && curOrder <= poses.length) {
+    if (continuous && curOrder <= diskRequests.length) {
         forward();
     } else {
         running = false;
